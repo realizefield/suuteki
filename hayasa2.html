@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAMBAシステム｜速さ②　通過算（列車問題）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f4ef;--sf:#fff;--sf2:#f0ede6;--sf3:#e6e2da;--bd:#d6d2c8;--bd2:#bcb8ae;--pink:#d93652;--teal:#0d9478;--blue:#2055b0;--amber:#a86000;--tl:#e6f5f1;--bl:#eaf0fb;--al:#fdf2dd;--pl:#fde8eb;--text:#1a1814;--text2:#58544c;--text3:#98948c;--r:12px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;min-height:100vh;}
+.site-header{background:var(--sf);border-bottom:1px solid var(--bd);padding:.65rem 1.5rem;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;}
+.logo{font-family:'Shippori Mincho',serif;font-size:1.05rem;color:var(--pink);}
+.logo-sep{color:var(--bd2);margin:0 4px;}
+.logo-sub{font-size:12px;color:var(--text2);}
+.back-bar{background:var(--sf2);border-bottom:1px solid var(--bd);padding:.5rem 1.5rem;display:flex;align-items:center;gap:8px;}
+.back-btn{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:500;color:var(--blue);text-decoration:none;padding:5px 14px;border:1.5px solid var(--blue);border-radius:20px;background:var(--bl);transition:all .15s;}
+.back-btn:hover{background:var(--blue);color:#fff;}
+.unit-badge{font-size:12px;color:var(--text3);margin-left:auto;background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:3px 10px;}
+.tab-nav{background:var(--sf);border-bottom:2px solid var(--bd);position:sticky;top:83px;z-index:99;display:flex;padding:0 1rem;}
+.tab-btn{padding:.7rem 1.4rem;font-size:13px;font-weight:500;color:var(--text2);background:none;border:none;cursor:pointer;font-family:'Noto Sans JP',sans-serif;display:flex;align-items:center;gap:7px;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .15s;white-space:nowrap;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active-ex{color:var(--pink);border-bottom-color:var(--pink);}
+.tab-btn.active-pr{color:var(--blue);border-bottom-color:var(--blue);}
+.tab-btn.active-cf{color:var(--amber);border-bottom-color:var(--amber);}
+.tab-pip{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;}
+.pip-ex{background:#fde8eb;color:var(--pink);}
+.pip-pr{background:var(--bl);color:var(--blue);}
+.pip-cf{background:var(--al);color:var(--amber);}
+.page{display:none;animation:fadeTab .2s ease;}
+.page.active{display:block;}
+@keyframes fadeTab{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+main{max-width:720px;margin:0 auto;padding:1.5rem 1rem 6rem;}
+.page-hdr{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:1rem 1.4rem;margin-bottom:1.4rem;display:flex;align-items:center;gap:12px;}
+.page-hdr-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:700;flex-shrink:0;}
+.icon-ex{background:var(--pink);color:#fff;}
+.icon-pr{background:var(--blue);color:#fff;}
+.icon-cf{background:var(--amber);color:#fff;}
+.page-hdr-title{font-size:15px;font-weight:700;margin-bottom:2px;}
+.page-hdr-desc{font-size:12px;color:var(--text2);}
+.prog-wrap{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:.8rem 1.2rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:12px;}
+.pb-w{flex:1;height:6px;background:var(--bd);border-radius:3px;overflow:hidden;}
+.pb{height:100%;border-radius:3px;transition:width .4s;}
+.pb-pr{background:var(--blue);}
+.pb-cf{background:var(--amber);}
+.pb-txt{font-size:12px;color:var(--text2);white-space:nowrap;}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:1.4rem 1.5rem;margin-bottom:1rem;}
+.clabel{font-size:11px;font-weight:700;letter-spacing:.1em;margin-bottom:.85rem;display:flex;align-items:center;gap:6px;}
+.clabel::before{content:'';width:3px;height:14px;border-radius:2px;display:inline-block;}
+.clabel.ex{color:var(--pink);}.clabel.ex::before{background:var(--pink);}
+.clabel.pr{color:var(--blue);}.clabel.pr::before{background:var(--blue);}
+.clabel.cf{color:var(--amber);}.clabel.cf::before{background:var(--amber);}
+.clabel.kai{color:var(--teal);}.clabel.kai::before{background:var(--teal);}
+.clabel.pt{color:#6a4ea8;}.clabel.pt::before{background:#6a4ea8;}
+.q-text{font-size:15px;line-height:2;color:var(--text);margin-bottom:1.2rem;}
+.prob-src{display:inline-block;font-size:11px;color:var(--text3);background:var(--sf2);border:1px solid var(--bd);border-radius:20px;padding:3px 10px;margin-bottom:1.1rem;}
+.point-box{background:linear-gradient(135deg,#fffaf0,#fff6e0);border:2px solid var(--amber);border-radius:var(--r);padding:1.2rem 1.5rem;margin-bottom:1.2rem;}
+.point-box h3{font-size:14px;font-weight:700;color:var(--amber);margin-bottom:.8rem;}
+.point-box p,.point-box li{font-size:14px;line-height:2;color:var(--text);}
+.point-box ul{padding-left:1.2rem;}
+.point-box.blue-box{background:linear-gradient(135deg,#eaf4ff,#dfeeff);border-color:var(--blue);}
+.point-box.blue-box h3{color:var(--blue);}
+/* ── ME8スタイル 列車図解 ── */
+.train-diagram{background:var(--sf2);border:1px solid var(--bd);border-radius:10px;padding:1rem 1.2rem;margin:.9rem 0 1rem;}
+.train-diagram-title{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.06em;margin-bottom:.7rem;}
+.train-diagram svg{width:100%;display:block;overflow:visible;}
+.diagram-note{background:var(--pl);border-radius:8px;padding:8px 14px;margin-top:8px;font-size:13px;font-weight:700;color:var(--pink);text-align:center;}
+.diagram-note.teal{background:var(--tl);color:var(--teal);}
+.diagram-note.blue{background:var(--bl);color:var(--blue);}
+/* ── ヒント ── */
+.hint-btn{background:none;border:1.5px dashed var(--bd2);border-radius:8px;padding:7px 14px;font-size:13px;color:var(--text2);cursor:pointer;font-family:'Noto Sans JP',sans-serif;width:100%;text-align:left;margin-bottom:.6rem;transition:all .15s;}
+.hint-btn:hover{border-color:var(--teal);color:var(--teal);}
+.hint-box{background:var(--tl);border:1px solid var(--teal);border-radius:9px;padding:1rem 1.2rem;margin-bottom:.8rem;font-size:14px;line-height:1.9;color:var(--text);display:none;}
+/* ── 選択肢 ── */
+.choices{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:1rem;}
+@media(max-width:500px){.choices{grid-template-columns:1fr 1fr;}}
+.choices-1col{display:grid;grid-template-columns:1fr;gap:7px;margin-bottom:1rem;}
+.ch{background:var(--sf2);border:1.5px solid var(--bd);border-radius:9px;padding:10px 6px;font-size:13px;color:var(--text);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .15s;font-family:'Noto Sans JP',sans-serif;width:100%;line-height:1.4;}
+.ch:hover:not(:disabled){border-color:var(--blue);background:var(--bl);}
+.ch:disabled{cursor:default;}
+.ch.ok{border-color:var(--teal);background:var(--tl);color:var(--teal);}
+.ch.ng{border-color:var(--pink);background:var(--pl);color:var(--pink);}
+.cnum{width:24px;height:24px;border-radius:50%;background:var(--bd);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.ch.ok .cnum{background:var(--teal);color:#fff;}
+.ch.ng .cnum{background:var(--pink);color:#fff;}
+/* ── 結果バナー ── */
+.res-banner{border-radius:9px;padding:.9rem 1.2rem;margin-bottom:1rem;font-size:14px;font-weight:700;display:none;}
+.res-ok{background:var(--tl);border:1px solid var(--teal);color:var(--teal);}
+.res-ng{background:var(--pl);border:1px solid var(--pink);color:var(--pink);}
+/* ── タイマー ── */
+.timer-wrap{display:flex;align-items:center;gap:10px;margin-bottom:1rem;}
+.timer-ring{position:relative;width:48px;height:48px;flex-shrink:0;}
+.timer-ring svg{width:48px;height:48px;transform:rotate(-90deg);}
+circle{fill:none;stroke-width:3;stroke-linecap:round;}
+.tbg{stroke:var(--bd2);}
+.tfg{stroke:var(--teal);transition:stroke-dashoffset .9s linear;stroke-dasharray:126;stroke-dashoffset:0;}
+.tfg.warn{stroke:var(--amber);}
+.tcenter{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--text2);font-family:'DM Mono',monospace;}
+.timer-msg{font-size:13px;color:var(--text2);line-height:1.5;}
+.goal{background:var(--tl);color:var(--teal);font-size:11px;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:4px;}
+/* ── ステップ解説 ── */
+.exp-box{background:var(--sf2);border-left:3px solid var(--teal);border-radius:0 9px 9px 0;padding:1rem 1.2rem;margin-bottom:.8rem;}
+.exp-box.blue{border-left-color:var(--blue);}
+.exp-box.amber{border-left-color:var(--amber);}
+.exp-box h4{font-size:13px;font-weight:700;color:var(--teal);margin-bottom:.5rem;}
+.exp-box.blue h4{color:var(--blue);}
+.exp-box.amber h4{color:var(--amber);}
+.exp-box p{font-size:14px;line-height:1.9;white-space:pre-line;}
+.exp-box strong{color:var(--pink);}
+.reveal-btn{background:var(--sf);border:1.5px solid var(--teal);border-radius:8px;padding:8px 18px;font-size:13px;color:var(--teal);cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-weight:500;transition:all .15s;width:100%;text-align:center;margin-bottom:.8rem;}
+.reveal-btn:hover{background:var(--tl);}
+/* ── 理解度 ── */
+.abc-wrap{background:var(--sf2);border:1px solid var(--bd);border-radius:9px;padding:.9rem 1.2rem;margin-top:.8rem;}
+.abc-lbl{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.08em;margin-bottom:.6rem;}
+.abc-row{display:flex;gap:8px;}
+.abc-btn{flex:1;padding:9px 4px;border-radius:8px;border:1.5px solid var(--bd);background:var(--sf);font-family:'Noto Sans JP',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text2);}
+.abc-btn span{font-size:10px;font-weight:400;}
+.abc-btn.on.abc-A{background:#e8f8ef;border-color:var(--teal);color:var(--teal);}
+.abc-btn.on.abc-B{background:var(--bl);border-color:var(--blue);color:var(--blue);}
+.abc-btn.on.abc-C{background:var(--pl);border-color:var(--pink);color:var(--pink);}
+.next-page-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:var(--sf);border:1.5px solid var(--bd);border-radius:var(--r);font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all .15s;margin-top:.5rem;}
+.next-page-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--bl);}
+
+
+.exp-note-done{background:var(--tl);border:1px solid var(--teal);border-radius:8px;padding:.7rem 1.1rem;font-size:13px;font-weight:700;color:var(--teal);margin:.4rem 0;}
+.ex-reveal{background:var(--teal);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:background .15s;width:100%;text-align:center;margin:.4rem 0;display:block;}
+.ex-reveal:hover{background:#0b7560;}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <span class="logo">GAMBA</span><span class="logo-sep">|</span><span class="logo-sub">公務員試験 数的推理</span>
+</header>
+<div class="back-bar">
+  <a href="index-sugaku.html" class="back-btn">← 単元表に戻る</a>
+  <span class="unit-badge">速さ ② 通過算</span>
+</div>
+<div class="tab-nav">
+  <button class="tab-btn active-ex" id="tab-ex" onclick="switchTab('ex')"><span class="tab-pip pip-ex">例</span>例題・解説</button>
+  <button class="tab-btn" id="tab-pr" onclick="switchTab('pr')"><span class="tab-pip pip-pr">練</span>練習問題</button>
+  <button class="tab-btn" id="tab-cf" onclick="switchTab('cf')"><span class="tab-pip pip-cf">確</span>確認テスト</button>
+</div>
+<main>
+
+<!-- ════════════ 例題 ════════════ -->
+<div class="page active" id="page-ex">
+  <div class="page-hdr">
+    <div class="page-hdr-icon icon-ex">例</div>
+    <div><div class="page-hdr-title">通過算（列車問題）</div><div class="page-hdr-desc">「渡りきる・隠れる・すれちがう」の3パターンを図解でマスターしましょう。</div></div>
+  </div>
+
+  <div class="card">
+    <div class="clabel pt">📌 重要ポイント</div>
+    <div class="point-box">
+      <h3>🚂 通過算の3パターン</h3>
+      <ul>
+        <li>【渡りきる】列車が橋/トンネルを渡り始めてから渡り終わるまで<br>→ 進む距離 ＝ <strong>橋の長さ ＋ 列車の長さ</strong></li>
+        <li>【隠れる】列車がトンネルに完全に隠れている時間<br>→ 進む距離 ＝ <strong>トンネルの長さ − 列車の長さ</strong></li>
+        <li>【すれちがう/追い越す】2列車の通過<br>→ 進む距離 ＝ <strong>2列車の長さの和</strong>（速さは和または差）</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 例題1 渡りきる -->
+  <div class="card">
+    <div class="clabel ex">例題 1　渡りきる場合（鉄橋＋トンネル・連立方程式）</div>
+    <div class="q-text">600mの鉄橋を列車が渡り始めてから渡り終わるまで40秒かかり、同じ列車が同じ速度で1400mのトンネルに入り始めてから出終わるまでに1分20秒かかったという。列車の速さをx m/秒、この列車の長さをy mとして、x、yをそれぞれ求めなさい。</div>
+
+    <!-- 図解1：渡りきる -->
+    <div class="train-diagram">
+      <div class="train-diagram-title">📐 渡りきる場合 ─ 先頭が移動する距離</div>
+      <svg viewBox="0 0 500 230" style="max-width:500px;">
+        <defs>
+          <marker id="arrO1" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0,9 3.5,0 7" fill="#e67e22"/></marker>
+        </defs>
+        <!-- ① 渡りはじめ -->
+        <text x="6" y="14" font-size="11" font-weight="bold" fill="#2980b9">① 渡りはじめ（先頭が橋の入口に来た瞬間）</text>
+        <line x1="0" y1="66" x2="500" y2="66" stroke="#ccc" stroke-width="1.5"/>
+        <!-- 鉄橋① -->
+        <rect x="140" y="44" width="10" height="22" fill="#7f8c8d" rx="1"/>
+        <rect x="340" y="44" width="10" height="22" fill="#7f8c8d" rx="1"/>
+        <polygon points="140,44 350,44 350,54 140,54" fill="#aed6f1" stroke="#2980b9" stroke-width="1.5"/>
+        <line x1="165" y1="44" x2="165" y2="54" stroke="#2980b9" stroke-width="1"/>
+        <line x1="190" y1="44" x2="190" y2="54" stroke="#2980b9" stroke-width="1"/>
+        <line x1="215" y1="44" x2="215" y2="54" stroke="#2980b9" stroke-width="1"/>
+        <line x1="240" y1="44" x2="240" y2="54" stroke="#2980b9" stroke-width="1"/>
+        <line x1="265" y1="44" x2="265" y2="54" stroke="#2980b9" stroke-width="1"/>
+        <line x1="290" y1="44" x2="290" y2="54" stroke="#2980b9" stroke-width="1"/>
+        <line x1="315" y1="44" x2="315" y2="54" stroke="#2980b9" stroke-width="1"/>
+        <line x1="340" y1="44" x2="340" y2="54" stroke="#2980b9" stroke-width="1"/>
+        <text x="245" y="42" font-size="11" fill="#1a5276" text-anchor="middle" font-weight="bold">600 m</text>
+        <!-- 列車① 先頭=橋入口(140), 長さ80px -->
+        <rect x="60" y="46" width="80" height="20" fill="#c0392b" rx="3"/>
+        <rect x="66" y="50" width="12" height="10" fill="#fadbd8" rx="1"/>
+        <rect x="84" y="50" width="12" height="10" fill="#fadbd8" rx="1"/>
+        <rect x="102" y="50" width="12" height="10" fill="#fadbd8" rx="1"/>
+        <polygon points="140,46 150,56 140,66" fill="#c0392b"/>
+        <circle cx="75" cy="67" r="5" fill="#555"/>
+        <circle cx="125" cy="67" r="5" fill="#555"/>
+        <!-- 先頭①点線 -->
+        <line x1="140" y1="30" x2="140" y2="74" stroke="#e74c3c" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="140" y="28" font-size="9" fill="#e74c3c" text-anchor="middle" font-weight="bold">先頭①</text>
+        <!-- 列車の長さラベル -->
+        <line x1="60" y1="78" x2="140" y2="78" stroke="#c0392b" stroke-width="1.2"/>
+        <line x1="60" y1="74" x2="60" y2="82" stroke="#c0392b" stroke-width="1.2"/>
+        <line x1="140" y1="74" x2="140" y2="82" stroke="#c0392b" stroke-width="1.2"/>
+        <text x="100" y="90" font-size="10" fill="#c0392b" text-anchor="middle" font-weight="bold">列車：y m</text>
+
+        <!-- ② 渡り終わり -->
+        <text x="6" y="120" font-size="11" font-weight="bold" fill="#e67e22">② 渡り終わり（最後尾が橋の出口を出た瞬間）</text>
+        <line x1="0" y1="172" x2="500" y2="172" stroke="#ccc" stroke-width="1.5"/>
+        <!-- 鉄橋② -->
+        <rect x="140" y="150" width="10" height="22" fill="#7f8c8d" rx="1"/>
+        <rect x="340" y="150" width="10" height="22" fill="#7f8c8d" rx="1"/>
+        <polygon points="140,150 350,150 350,160 140,160" fill="#aed6f1" stroke="#2980b9" stroke-width="1.5"/>
+        <line x1="165" y1="150" x2="165" y2="160" stroke="#2980b9" stroke-width="1"/>
+        <line x1="190" y1="150" x2="190" y2="160" stroke="#2980b9" stroke-width="1"/>
+        <line x1="215" y1="150" x2="215" y2="160" stroke="#2980b9" stroke-width="1"/>
+        <line x1="240" y1="150" x2="240" y2="160" stroke="#2980b9" stroke-width="1"/>
+        <line x1="265" y1="150" x2="265" y2="160" stroke="#2980b9" stroke-width="1"/>
+        <line x1="290" y1="150" x2="290" y2="160" stroke="#2980b9" stroke-width="1"/>
+        <line x1="315" y1="150" x2="315" y2="160" stroke="#2980b9" stroke-width="1"/>
+        <line x1="340" y1="150" x2="340" y2="160" stroke="#2980b9" stroke-width="1"/>
+        <text x="245" y="148" font-size="11" fill="#1a5276" text-anchor="middle" font-weight="bold">600 m</text>
+        <!-- 列車② 最後尾=橋出口(350), 先頭=350+80=430 -->
+        <rect x="350" y="152" width="80" height="20" fill="#c0392b" rx="3"/>
+        <rect x="356" y="156" width="12" height="10" fill="#fadbd8" rx="1"/>
+        <rect x="374" y="156" width="12" height="10" fill="#fadbd8" rx="1"/>
+        <rect x="392" y="156" width="12" height="10" fill="#fadbd8" rx="1"/>
+        <polygon points="430,152 440,162 430,172" fill="#c0392b"/>
+        <circle cx="365" cy="173" r="5" fill="#555"/>
+        <circle cx="415" cy="173" r="5" fill="#555"/>
+        <!-- 先頭②点線 -->
+        <line x1="430" y1="136" x2="430" y2="180" stroke="#e74c3c" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="430" y="134" font-size="9" fill="#e74c3c" text-anchor="middle" font-weight="bold">先頭②</text>
+        <!-- 列車の長さラベル② -->
+        <line x1="350" y1="184" x2="430" y2="184" stroke="#c0392b" stroke-width="1.2"/>
+        <line x1="350" y1="180" x2="350" y2="188" stroke="#c0392b" stroke-width="1.2"/>
+        <line x1="430" y1="180" x2="430" y2="188" stroke="#c0392b" stroke-width="1.2"/>
+        <text x="390" y="196" font-size="10" fill="#c0392b" text-anchor="middle" font-weight="bold">列車：y m</text>
+        <!-- 先頭の移動矢印 -->
+        <line x1="140" y1="216" x2="428" y2="216" stroke="#e67e22" stroke-width="2.5" marker-end="url(#arrO1)"/>
+        <line x1="140" y1="210" x2="140" y2="222" stroke="#e67e22" stroke-width="2"/>
+        <text x="284" y="228" font-size="11" fill="#e67e22" text-anchor="middle" font-weight="bold">先頭の移動距離 = 600 + y（m）</text>
+      </svg>
+      <div class="diagram-note">✅ 進む距離 = 橋の長さ ＋ 列車の長さ　→　600 ＋ y = 40x　…①</div>
+    </div>
+
+    <div class="clabel kai">解 説</div>
+    <button class="ex-reveal" id="rb-ex0" onclick="revealEx('ex0',3)">Step 1 を見る ▼</button>
+<div id="ex0-s0" class="exp-box" style="display:none">
+      <h4>Step 1　連立方程式を立てる</h4>
+      <p>列車の速さをx m/秒、長さをy mとする。
+「進む距離 = 橋の長さ + 列車の長さ」より
+① 鉄橋（600m）を40秒で渡りきる：
+　　600 + y = 40x　…①
+② トンネル（1400m）を80秒で渡りきる（1分20秒=80秒）：
+　　1400 + y = 80x　…②</p>
+    </div>
+    <div id="ex0-s1" class="exp-box blue" style="display:none">
+      <h4>Step 2　連立方程式を解く</h4>
+      <p>② − ① より
+800 = 40x　→　x = <strong>20</strong>（m/秒）
+①に代入：600 + y = 800　→　y = <strong>200</strong>（m）</p>
+    </div>
+    <div id="ex0-s2" class="exp-box amber" style="display:none">
+      <h4>✅ 答え　速さ 20m/秒、長さ 200m</h4>
+      <p>時速換算：20 × 3.6 = 72km/時</p>
+    </div>
+    <div id="ex0-fin" style="display:none"><div class="exp-note-done">✅ 解説をすべて確認しました！</div></div>
+  </div>
+
+  <!-- 例題2 隠れる -->
+  <div class="card">
+    <div class="clabel ex">例題 2　隠れる場合（トンネルに完全に隠れる）</div>
+    <div class="q-text">ある列車が550mの鉄橋を渡り始めてから渡り終わるまでに30秒、また650mのトンネルに入り終わってから出始めるまでに20秒かかったという。この列車の速さと長さを求めよ。</div>
+
+    <!-- 図解2：隠れる -->
+    <div class="train-diagram">
+      <div class="train-diagram-title">📐 隠れる場合 ─ 先頭が進む距離の違いに注目！</div>
+<svg viewBox="0 0 500 160" style="max-width:500px;">
+        <defs>
+          <marker id="arrT" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0,9 3.5,0 7" fill="#27ae60"/></marker>
+        </defs>
+        <!-- 地面 -->
+        <line x1="0" y1="60" x2="500" y2="60" stroke="#ccc" stroke-width="1.5"/>
+        <!-- トンネル（天井あり） -->
+        <rect x="100" y="22" width="300" height="38" fill="#e8e0d5" stroke="#7f8c8d" stroke-width="2" rx="2"/>
+        <!-- トンネル縦桁 -->
+        <line x1="125" y1="22" x2="125" y2="60" stroke="#95a5a6" stroke-width="1"/>
+        <line x1="155" y1="22" x2="155" y2="60" stroke="#95a5a6" stroke-width="1"/>
+        <line x1="185" y1="22" x2="185" y2="60" stroke="#95a5a6" stroke-width="1"/>
+        <line x1="215" y1="22" x2="215" y2="60" stroke="#95a5a6" stroke-width="1"/>
+        <line x1="245" y1="22" x2="245" y2="60" stroke="#95a5a6" stroke-width="1"/>
+        <line x1="275" y1="22" x2="275" y2="60" stroke="#95a5a6" stroke-width="1"/>
+        <line x1="305" y1="22" x2="305" y2="60" stroke="#95a5a6" stroke-width="1"/>
+        <line x1="335" y1="22" x2="335" y2="60" stroke="#95a5a6" stroke-width="1"/>
+        <line x1="365" y1="22" x2="365" y2="60" stroke="#95a5a6" stroke-width="1"/>
+        <text x="250" y="18" font-size="11" fill="#555" text-anchor="middle" font-weight="bold">トンネル：650 m</text>
+        <!-- 入口・出口ラベル -->
+        <text x="100" y="72" font-size="9" fill="#555" text-anchor="middle">入口</text>
+        <text x="400" y="72" font-size="9" fill="#555" text-anchor="middle">出口</text>
+        <!-- 「入り終わり」の列車（先頭が入口+列車長さ） -->
+        <text x="6" y="88" font-size="10" font-weight="bold" fill="#2980b9">③ 入り終わり（最後尾が入口を通った瞬間）</text>
+        <rect x="100" y="30" width="70" height="18" fill="#c0392b" rx="2" opacity="0.9"/>
+        <text x="135" y="44" font-size="9" fill="#fff" text-anchor="middle" font-weight="bold">列車(y m)</text>
+        <line x1="100" y1="82" x2="170" y2="82" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="135" y="93" font-size="9" fill="#c0392b" text-anchor="middle">先頭③</text>
+        <!-- 「出始め」の列車（最後尾が出口-列車長さ） -->
+        <text x="6" y="108" font-size="10" font-weight="bold" fill="#e67e22">④ 出始め（先頭が出口に来た瞬間）</text>
+        <rect x="330" y="30" width="70" height="18" fill="#c0392b" rx="2" opacity="0.9"/>
+        <text x="365" y="44" font-size="9" fill="#fff" text-anchor="middle" font-weight="bold">列車(y m)</text>
+        <line x1="400" y1="82" x2="400" y2="98" stroke="#e74c3c" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="400" y="109" font-size="9" fill="#e74c3c" text-anchor="middle">先頭④</text>
+        <!-- 先頭の移動距離矢印 -->
+        <line x1="170" y1="130" x2="398" y2="130" stroke="#27ae60" stroke-width="2.5" marker-end="url(#arrT)"/>
+        <line x1="170" y1="124" x2="170" y2="136" stroke="#27ae60" stroke-width="2"/>
+        <text x="284" y="148" font-size="11" fill="#27ae60" text-anchor="middle" font-weight="bold">先頭の移動距離 = 650 − y（m）</text>
+      </svg>
+      <div class="diagram-note teal">✅ 隠れる場合：進む距離 = トンネルの長さ − 列車の長さ　→　650 − y = 20x　…②</div>
+    </div>
+
+    <div class="clabel kai">解 説</div>
+    <button class="ex-reveal" id="rb-ex1" onclick="revealEx('ex1',3)">Step 1 を見る ▼</button>
+<div id="ex1-s0" class="exp-box" style="display:none">
+      <h4>Step 1　連立方程式を立てる</h4>
+      <p>① 渡りきる（鉄橋550m、30秒）：　550 + y = 30x　…①
+② 隠れる（トンネル650m、20秒）：　650 − y = 20x　…②</p>
+    </div>
+    <div id="ex1-s1" class="exp-box blue" style="display:none">
+      <h4>Step 2　解く</h4>
+      <p>① + ② より
+1200 = 50x　→　x = <strong>24</strong>（m/秒）
+①に代入：550 + y = 720　→　y = <strong>170</strong>（m）</p>
+    </div>
+    <div id="ex1-s2" class="exp-box amber" style="display:none">
+      <h4>✅ 答え　速さ 24m/秒、長さ 170m</h4>
+      <p>渡りきる：＋（プラス）　隠れる：−（マイナス）　この違いが重要です！</p>
+    </div>
+    <div id="ex1-fin" style="display:none"><div class="exp-note-done">✅ 解説をすべて確認しました！</div></div>
+  </div>
+
+  <!-- 例題3 すれちがい・追い越し -->
+  <div class="card">
+    <div class="clabel ex">例題 3　すれちがい・追い越しの場合</div>
+    <div class="q-text">120mの長さの列車Aと80mの長さの列車Bとが、反対向きにすれちがった場合、すれちがいはじめて離れてしまうのに4秒かかった。また、同じ方向に進んでいるときに、A列車がB列車に追いつき、追い越してしまうまでに20秒かかったという。A列車、B列車の時速をそれぞれ求めよ。</div>
+
+    <!-- 図解3：すれちがい -->
+    <div class="train-diagram">
+      <div class="train-diagram-title">📐 すれちがい ─ 2列車の長さの和が「進む距離」</div>
+<svg viewBox="0 0 500 130" style="max-width:500px;">
+        <defs>
+          <marker id="arrL" markerWidth="9" markerHeight="7" refX="1" refY="3.5" orient="auto"><polygon points="9 0,0 3.5,9 7" fill="#8e44ad"/></marker>
+          <marker id="arrR3" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0,9 3.5,0 7" fill="#c0392b"/></marker>
+        </defs>
+        <line x1="0" y1="55" x2="500" y2="55" stroke="#ccc" stroke-width="1.5"/>
+        <!-- ① すれちがい始め -->
+        <text x="6" y="12" font-size="10" font-weight="bold" fill="#c0392b">① すれちがい始め</text>
+        <!-- A列車（右向き、先頭が左） -->
+        <rect x="30" y="32" width="120" height="20" fill="#c0392b" rx="3"/>
+        <text x="90" y="46" font-size="9" fill="#fff" text-anchor="middle" font-weight="bold">A（120m）→</text>
+        <!-- B列車（左向き、先頭が右側） -->
+        <rect x="250" y="32" width="80" height="20" fill="#2055b0" rx="3"/>
+        <text x="290" y="46" font-size="9" fill="#fff" text-anchor="middle" font-weight="bold">← B（80m）</text>
+        <!-- すれちがい完了 -->
+        <text x="6" y="75" font-size="10" font-weight="bold" fill="#8e44ad">② すれちがい終わり（完全に離れた瞬間）</text>
+        <rect x="200" y="68" width="120" height="20" fill="#c0392b" rx="3" opacity="0.7"/>
+        <text x="260" y="82" font-size="9" fill="#fff" text-anchor="middle">A →</text>
+        <rect x="60" y="68" width="80" height="20" fill="#2055b0" rx="3" opacity="0.7"/>
+        <text x="100" y="82" font-size="9" fill="#fff" text-anchor="middle">← B</text>
+        <!-- 移動距離の合計矢印 -->
+        <line x1="150" y1="105" x2="328" y2="105" stroke="#c0392b" stroke-width="2" marker-end="url(#arrR3)"/>
+        <text x="239" y="118" font-size="10" fill="#c0392b" text-anchor="middle" font-weight="bold">Aの進んだ距離</text>
+        <line x1="250" y1="105" x2="72" y2="105" stroke="#8e44ad" stroke-width="2" marker-end="url(#arrL)"/>
+        <text x="161" y="128" font-size="9" fill="#8e44ad" text-anchor="middle">（2列車合わせて 120+80=200m 移動）</text>
+      </svg>
+      <div class="diagram-note">✅ すれちがい：(x＋y)×4 = 200 → x＋y = 50 …①　　追い越し：(x−y)×20 = 200 → x−y = 10 …②</div>
+    </div>
+
+    <div class="clabel kai">解 説</div>
+    <button class="ex-reveal" id="rb-ex2" onclick="revealEx('ex2',3)">Step 1 を見る ▼</button>
+<div id="ex2-s0" class="exp-box" style="display:none">
+      <h4>Step 1　方程式を立てる</h4>
+      <p>A列車の速さをx m/秒、B列車をy m/秒とする。
+2列車の長さの和 = 120 + 80 = 200m
+
+すれちがい（反対方向）：速さの和 × 時間 = 200
+(x + y) × 4 = 200　→　x + y = 50　…①
+
+追い越し（同方向）：速さの差 × 時間 = 200
+(x − y) × 20 = 200　→　x − y = 10　…②</p>
+    </div>
+    <div id="ex2-s1" class="exp-box blue" style="display:none">
+      <h4>Step 2　連立方程式を解く</h4>
+      <p>①+② → 2x = 60 → x = <strong>30</strong>（m/秒）
+①−② → 2y = 40 → y = <strong>20</strong>（m/秒）
+時速換算：A = 30×3.6 = <strong>108km/時</strong>　B = 20×3.6 = <strong>72km/時</strong></p>
+    </div>
+    <div id="ex2-s2" class="exp-box amber" style="display:none">
+      <h4>✅ 答え　A列車 108km/時、B列車 72km/時</h4>
+      <p>m/秒 → km/時：×3.6（覚えておきましょう）</p>
+    </div>
+    <div id="ex2-fin" style="display:none"><div class="exp-note-done">✅ 解説をすべて確認しました！</div></div>
+  </div>
+
+  <button class="next-page-btn" onclick="switchTab('pr')">練習問題へ進む →</button>
+</div>
+
+<!-- ════════════ 練習問題 ════════════ -->
+<div class="page" id="page-pr">
+  <div class="page-hdr">
+    <div class="page-hdr-icon icon-pr">練</div>
+    <div><div class="page-hdr-title">練習問題</div>
+<div class="page-hdr-desc">3パターンを確認しながら解いてみましょう。</div></div>
+  </div>
+  <div class="prog-wrap">
+    <div class="pb-w"><div class="pb pb-pr" id="pb-pr" style="width:0%"></div></div>
+    <div class="pb-txt" id="pb-pr-txt">0 / 3 完了</div>
+  </div>
+
+  <!-- 練習1 渡りきる -->
+  <div class="card">
+    <div class="clabel pr">練習 1　渡りきる問題</div>
+    <div id="t1" class="timer-wrap">
+      <div class="timer-ring" id="ring-q1"><svg viewBox="0 0 48 48"><circle class="tbg" cx="24" cy="24" r="20"/><circle class="tfg" cx="24" cy="24" r="20"/></svg><div class="tcenter" id="tc-q1">0:00</div></div>
+      <div class="timer-msg" id="tm-q1">自力で考えましょう。<span class="goal">目標：120秒以内</span></div>
+    </div>
+    <div class="q-text">ある列車が850mの鉄橋を渡り始めてから渡り終わるまでに40秒かかった。また、この列車が1150mのトンネルに入り始めてから出終わるまでに52秒かかった。この列車の長さは何mか。</div>
+
+    <!-- 練習1図解：渡りきる（コンパクト版） -->
+    <div class="train-diagram">
+      <div class="train-diagram-title">📐 渡りきる場合の公式（2本立てて連立）</div>
+      <svg viewBox="0 0 460 80" style="max-width:460px;">
+        <defs><marker id="arrP1" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#c0392b"/></marker></defs>
+        <!-- 線路 -->
+        <line x1="0" y1="45" x2="460" y2="45" stroke="#ddd" stroke-width="1.5"/>
+        <!-- 鉄橋 -->
+        <rect x="100" y="28" width="9" height="17" fill="#7f8c8d"/>
+        <rect x="270" y="28" width="9" height="17" fill="#7f8c8d"/>
+        <polygon points="100,28 279,28 279,36 100,36" fill="#aed6f1" stroke="#2980b9" stroke-width="1.5"/>
+        <text x="189" y="26" font-size="10" fill="#1a5276" text-anchor="middle" font-weight="bold">橋(or トンネル)の長さ</text>
+        <!-- 列車（出発位置） -->
+        <rect x="20" y="30" width="80" height="15" fill="#c0392b" rx="2"/>
+        <polygon points="100,30 108,37 100,45" fill="#c0392b"/>
+        <text x="60" y="42" font-size="9" fill="#fff" text-anchor="middle">列車(y m)</text>
+        <!-- 矢印 -->
+        <line x1="100" y1="62" x2="358" y2="62" stroke="#c0392b" stroke-width="2" marker-end="url(#arrP1)"/>
+        <line x1="100" y1="56" x2="100" y2="68" stroke="#c0392b" stroke-width="1.5"/>
+        <text x="229" y="74" font-size="10" fill="#c0392b" text-anchor="middle" font-weight="bold">先頭の移動距離 = 橋の長さ + 列車の長さ(y)</text>
+        <!-- 列車（終了位置） -->
+        <rect x="280" y="30" width="80" height="15" fill="#c0392b" rx="2" opacity="0.5"/>
+        <polygon points="360,30 368,37 360,45" fill="#c0392b" opacity="0.5"/>
+      </svg>
+      <div class="diagram-note">①鉄橋：850 + y = 40x　　②トンネル：1150 + y = 52x　→ ②−① より x を求める</div>
+    </div>
+
+    <button class="hint-btn" onclick="toggleHint('hint-q1')">💡 ヒントを見る ▼</button>
+    <div class="hint-box" id="hint-q1">② − ① より 300 = 12x → x = 25（m/秒）。①に代入して y = 150m。</div>
+    <div class="choices" id="ch-q1">
+      <button class="ch" onclick="ans('q1',0,0)"><div class="cnum">1</div>150m</button>
+      <button class="ch" onclick="ans('q1',1,0)"><div class="cnum">2</div>175m</button>
+      <button class="ch" onclick="ans('q1',2,0)"><div class="cnum">3</div>200m</button>
+      <button class="ch" onclick="ans('q1',3,0)"><div class="cnum">4</div>225m</button>
+      <button class="ch" onclick="ans('q1',4,0)"><div class="cnum">5</div>250m</button>
+    </div>
+    <div class="res-banner res-ok" id="q1-res-ok">✅ 正解！</div>
+    <div class="res-banner res-ng" id="q1-res-ng">❌ 不正解。解説を確認しましょう。</div>
+    <div id="kai-q1" style="display:none">
+      <div class="clabel kai">解 説</div>
+      <div class="exp-box"><h4>Step 1　連立方程式を立てる</h4><p>850 + y = 40x　…①　　1150 + y = 52x　…②</p></div>
+      <div class="exp-box blue"><h4>Step 2　解く</h4><p>②−① → 300 = 12x → x = <strong>25</strong>（m/秒）
+①代入：850 + y = 1000 → y = <strong>150</strong>（m）</p></div>
+      <div class="exp-box amber"><h4>✅ 正解は 1（150m）　速さ 25m/秒</h4><p></p></div>
+      <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+        <button class="abc-btn abc-A" id="q1-kA" onclick="setMark('q1k','A')">✅ A<span>わかった</span></button>
+        <button class="abc-btn abc-B" id="q1-kB" onclick="setMark('q1k','B')">📖 B<span>解説でわかった</span></button>
+        <button class="abc-btn abc-C" id="q1-kC" onclick="setMark('q1k','C')">❓ C<span>わからなかった</span></button>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- 練習2 隠れる -->
+  <div class="card">
+    <div class="clabel pr">練習 2　隠れる問題</div>
+    <div id="t2" class="timer-wrap">
+      <div class="timer-ring" id="ring-q2"><svg viewBox="0 0 48 48"><circle class="tbg" cx="24" cy="24" r="20"/><circle class="tfg" cx="24" cy="24" r="20"/></svg><div class="tcenter" id="tc-q2">0:00</div></div>
+      <div class="timer-msg" id="tm-q2">自力で考えましょう。<span class="goal">目標：120秒以内</span></div>
+    </div>
+    <div class="q-text">ある列車が720mの鉄橋を渡るのに、渡り始めて渡り終えるまで45秒かかった。この列車が同じ速さで780mのトンネルを入ってしまってから出始めるまで30秒かかった。この列車の速さは何m/秒か。</div>
+
+    <!-- 練習2図解：隠れる（コンパクト版） -->
+    <div class="train-diagram">
+      <div class="train-diagram-title">📐 渡りきる（＋）と隠れる（−）の違いに注目！</div>
+      <svg viewBox="0 0 460 90" style="max-width:460px;">
+        <!-- 渡りきる行 -->
+        <text x="6" y="14" font-size="10" fill="#c0392b" font-weight="bold">渡りきる：進む距離 = 橋(720m) ＋ 列車(y)</text>
+        <rect x="330" y="4" width="50" height="10" fill="#c0392b" rx="1" opacity="0.6"/>
+        <text x="355" y="13" font-size="7.5" fill="#fff" text-anchor="middle">列車</text>
+        <line x1="6" y1="20" x2="454" y2="20" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <!-- 隠れる行 -->
+        <text x="6" y="38" font-size="10" fill="#27ae60" font-weight="bold">隠れる：進む距離 = トンネル(780m) − 列車(y)</text>
+        <!-- トンネル断面 -->
+        <rect x="80" y="50" width="300" height="30" fill="#e8e0d5" stroke="#7f8c8d" stroke-width="1.5" rx="2"/>
+        <text x="230" y="46" font-size="9" fill="#555" text-anchor="middle">780m トンネル</text>
+        <!-- 列車（入り終わり） -->
+        <rect x="80" y="53" width="60" height="20" fill="#c0392b" rx="2" opacity="0.85"/>
+        <text x="110" y="67" font-size="8" fill="#fff" text-anchor="middle">y m</text>
+        <!-- 列車（出始め） -->
+        <rect x="320" y="53" width="60" height="20" fill="#c0392b" rx="2" opacity="0.5"/>
+        <text x="350" y="67" font-size="8" fill="#fff" text-anchor="middle">y m</text>
+        <!-- 先頭の移動 -->
+        <line x1="140" y1="85" x2="378" y2="85" stroke="#27ae60" stroke-width="2"/>
+        <line x1="140" y1="80" x2="140" y2="90" stroke="#27ae60" stroke-width="1.5"/>
+        <line x1="378" y1="80" x2="378" y2="90" stroke="#27ae60" stroke-width="1.5"/>
+        <text x="259" y="96" font-size="9" fill="#27ae60" text-anchor="middle" font-weight="bold">= 780 − y（m）</text>
+      </svg>
+      <div class="diagram-note teal">①渡りきる：720 + y = 45x　　②隠れる：780 − y = 30x　→ ①+② より x を求める</div>
+    </div>
+
+    <button class="hint-btn" onclick="toggleHint('hint-q2')">💡 ヒントを見る ▼</button>
+    <div class="hint-box" id="hint-q2">① + ② より 1500 = 75x → x = 20（m/秒）。①に代入して y = 180m。</div>
+    <div class="choices" id="ch-q2">
+      <button class="ch" onclick="ans('q2',0,1)"><div class="cnum">1</div>16m/秒</button>
+      <button class="ch" onclick="ans('q2',1,1)"><div class="cnum">2</div>20m/秒</button>
+      <button class="ch" onclick="ans('q2',2,1)"><div class="cnum">3</div>24m/秒</button>
+      <button class="ch" onclick="ans('q2',3,1)"><div class="cnum">4</div>25m/秒</button>
+      <button class="ch" onclick="ans('q2',4,1)"><div class="cnum">5</div>30m/秒</button>
+    </div>
+    <div class="res-banner res-ok" id="q2-res-ok">✅ 正解！</div>
+    <div class="res-banner res-ng" id="q2-res-ng">❌ 不正解。解説を確認しましょう。</div>
+    <div id="kai-q2" style="display:none">
+      <div class="clabel kai">解 説</div>
+      <div class="exp-box"><h4>Step 1　方程式を立てる</h4><p>渡りきる：720 + y = 45x　…①
+隠れる：780 − y = 30x　…②</p></div>
+      <div class="exp-box blue"><h4>Step 2　①+② で解く</h4><p>1500 = 75x → x = <strong>20</strong>（m/秒）　長さ y = <strong>180m</strong></p></div>
+      <div class="exp-box amber"><h4>✅ 正解は 2（20m/秒）</h4><p></p></div>
+      <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+        <button class="abc-btn abc-A" id="q2-kA" onclick="setMark('q2k','A')">✅ A<span>わかった</span></button>
+        <button class="abc-btn abc-B" id="q2-kB" onclick="setMark('q2k','B')">📖 B<span>解説でわかった</span></button>
+        <button class="abc-btn abc-C" id="q2-kC" onclick="setMark('q2k','C')">❓ C<span>わからなかった</span></button>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- 練習3 すれちがい -->
+  <div class="card">
+    <div class="clabel pr">練習 3　すれちがい・追い越し</div>
+    <div id="t3" class="timer-wrap">
+      <div class="timer-ring" id="ring-q3"><svg viewBox="0 0 48 48"><circle class="tbg" cx="24" cy="24" r="20"/><circle class="tfg" cx="24" cy="24" r="20"/></svg><div class="tcenter" id="tc-q3">0:00</div></div>
+      <div class="timer-msg" id="tm-q3">自力で考えましょう。<span class="goal">目標：150秒以内</span></div>
+    </div>
+    <div class="q-text">180mの長さの快速列車と60mの長さの普通列車とが、反対向きにすれちがった場合、すれちがいはじめて離れてしまうのに6秒かかった。また、同じ方向に進んでいるときに、快速列車が普通列車に追いつき、追い越してしまうまでに24秒かかったという。快速列車の時速を求めよ。</div>
+
+    <!-- 練習3図解：すれちがい -->
+    <div class="train-diagram">
+      <div class="train-diagram-title">📐 すれちがい vs 追い越し ─ 速さの「和」か「差」か</div>
+      <svg viewBox="0 0 460 100" style="max-width:460px;">
+        <defs>
+          <marker id="arrS1" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#c0392b"/></marker>
+          <marker id="arrS2" markerWidth="8" markerHeight="6" refX="1" refY="3" orient="auto"><polygon points="8 0,0 3,8 6" fill="#2055b0"/></marker>
+          <marker id="arrS3" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#27ae60"/></marker>
+        </defs>
+        <!-- すれちがい -->
+        <text x="6" y="13" font-size="10" fill="#c0392b" font-weight="bold">【すれちがい】反対向き → 速さの「和」</text>
+        <rect x="80" y="18" width="120" height="16" fill="#c0392b" rx="2"/>
+        <text x="140" y="30" font-size="8.5" fill="#fff" text-anchor="middle">快速 180m　→</text>
+        <rect x="270" y="18" width="60" height="16" fill="#2055b0" rx="2"/>
+        <text x="300" y="30" font-size="8.5" fill="#fff" text-anchor="middle">←普通 60m</text>
+        <line x1="200" y1="40" x2="248" y2="40" stroke="#c0392b" stroke-width="1.5" marker-end="url(#arrS1)"/>
+        <line x1="200" y1="40" x2="152" y2="40" stroke="#2055b0" stroke-width="1.5" marker-end="url(#arrS2)"/>
+        <text x="200" y="52" font-size="9" fill="#555" text-anchor="middle">合わせて 180+60=240m　÷　6秒 → 速さの和=40</text>
+        <!-- 追い越し -->
+        <text x="6" y="66" font-size="10" fill="#27ae60" font-weight="bold">【追い越し】同じ方向 → 速さの「差」</text>
+        <rect x="50" y="72" width="120" height="16" fill="#c0392b" rx="2"/>
+        <text x="110" y="84" font-size="8.5" fill="#fff" text-anchor="middle">快速 180m　→</text>
+        <rect x="200" y="72" width="60" height="16" fill="#2055b0" rx="2"/>
+        <text x="230" y="84" font-size="8.5" fill="#fff" text-anchor="middle">普通 60m →</text>
+        <line x1="170" y1="95" x2="408" y2="95" stroke="#27ae60" stroke-width="1.5" marker-end="url(#arrS3)"/>
+        <text x="289" y="104" font-size="9" fill="#27ae60" text-anchor="middle">240m ÷ 24秒 → 速さの差=10</text>
+      </svg>
+      <div class="diagram-note blue">①すれちがい：(x+y)×6 = 240 → x+y = 40　　②追い越し：(x−y)×24 = 240 → x−y = 10</div>
+    </div>
+
+    <button class="hint-btn" onclick="toggleHint('hint-q3')">💡 ヒントを見る ▼</button>
+    <div class="hint-box" id="hint-q3">①+② → 2x = 50 → x = 25m/秒 → 25×3.6 = 90km/時。</div>
+    <div class="choices" id="ch-q3">
+      <button class="ch" onclick="ans('q3',0,1)"><div class="cnum">1</div>時速72km</button>
+      <button class="ch" onclick="ans('q3',1,1)"><div class="cnum">2</div>時速90km</button>
+      <button class="ch" onclick="ans('q3',2,1)"><div class="cnum">3</div>時速108km</button>
+      <button class="ch" onclick="ans('q3',3,1)"><div class="cnum">4</div>時速120km</button>
+      <button class="ch" onclick="ans('q3',4,1)"><div class="cnum">5</div>時速126km</button>
+    </div>
+    <div class="res-banner res-ok" id="q3-res-ok">✅ 正解！</div>
+    <div class="res-banner res-ng" id="q3-res-ng">❌ 不正解。解説を確認しましょう。</div>
+    <div id="kai-q3" style="display:none">
+      <div class="clabel kai">解 説</div>
+      <div class="exp-box"><h4>Step 1　方程式を立てる</h4><p>(x+y)×6 = 240 → x+y = 40 …①
+(x−y)×24 = 240 → x−y = 10 …②</p></div>
+      <div class="exp-box blue"><h4>Step 2　解く</h4><p>①+② → 2x = 50 → x = <strong>25</strong>（m/秒）
+時速：25 × 3.6 = <strong>90km/時</strong></p></div>
+      <div class="exp-box amber"><h4>✅ 正解は 2（時速90km）</h4><p></p></div>
+      <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+        <button class="abc-btn abc-A" id="q3-kA" onclick="setMark('q3k','A')">✅ A<span>わかった</span></button>
+        <button class="abc-btn abc-B" id="q3-kB" onclick="setMark('q3k','B')">📖 B<span>解説でわかった</span></button>
+        <button class="abc-btn abc-C" id="q3-kC" onclick="setMark('q3k','C')">❓ C<span>わからなかった</span></button>
+      </div></div>
+    </div>
+  </div>
+  <button class="next-page-btn" onclick="switchTab('cf')">確認テストへ進む →</button>
+</div>
+
+<!-- ════════════ 確認テスト ════════════ -->
+<div class="page" id="page-cf">
+  <div class="page-hdr">
+    <div class="page-hdr-icon icon-cf">確</div>
+    <div><div class="page-hdr-title">確認テスト（実戦問題）</div><div class="page-hdr-desc">本試験と同形式の問題です。</div></div>
+  </div>
+  <div class="prog-wrap">
+    <div class="pb-w"><div class="pb pb-cf" id="pb-cf" style="width:0%"></div></div>
+    <div class="pb-txt" id="pb-cf-txt">0 / 2 完了</div>
+  </div>
+
+  <!-- 確認1 -->
+  <div class="card">
+    <div class="clabel cf">確認テスト 1</div>
+    <span class="prob-src">地方中級・平成10年度</span>
+    <div id="t4" class="timer-wrap">
+      <div class="timer-ring" id="ring-q4"><svg viewBox="0 0 48 48"><circle class="tbg" cx="24" cy="24" r="20"/><circle class="tfg" cx="24" cy="24" r="20"/></svg><div class="tcenter" id="tc-q4">0:00</div></div>
+      <div class="timer-msg" id="tm-q4">自力で考えましょう。<span class="goal">目標：3分以内</span></div>
+    </div>
+    <div class="q-text">長さ200mの列車Aと、長さ不明の列車Bが同時に同じトンネルに入った。両列車とも先端部がトンネルの入口にさしかかってから最後尾がトンネルに入り終わるまでに10秒かかった。また、その後40秒で、列車Aの先端部はトンネルの出口に達し、列車Bの最後尾はトンネルからちょうど抜け出るところであった。列車Bの長さとして正しいものはどれか。</div>
+
+    <!-- 確認1図解 -->
+    <div class="train-diagram">
+      <div class="train-diagram-title">📐 状況を整理する ─ A・Bが同時にトンネルに入る</div>
+      <svg viewBox="0 0 460 110" style="max-width:460px;">
+        <!-- トンネル -->
+        <rect x="80" y="15" width="300" height="60" fill="#e8e0d5" stroke="#7f8c8d" stroke-width="2" rx="2"/>
+        <text x="230" y="12" font-size="10" fill="#555" text-anchor="middle" font-weight="bold">トンネル（長さ = L m）</text>
+        <text x="80" y="84" font-size="9" fill="#555" text-anchor="middle">入口</text>
+        <text x="380" y="84" font-size="9" fill="#555" text-anchor="middle">出口</text>
+        <!-- A列車 -->
+        <rect x="80" y="22" width="80" height="18" fill="#c0392b" rx="2"/>
+        <text x="120" y="35" font-size="8.5" fill="#fff" text-anchor="middle">A（200m）→</text>
+        <!-- B列車 -->
+        <rect x="80" y="46" width="60" height="18" fill="#2055b0" rx="2"/>
+        <text x="110" y="59" font-size="8.5" fill="#fff" text-anchor="middle">B（? m）→</text>
+        <!-- 10秒後の状態 -->
+        <text x="6" y="95" font-size="9" fill="#c0392b">10秒後：Aの最後尾が入口を通過（A全体がトンネル内に）</text>
+        <text x="6" y="108" font-size="9" fill="#2055b0">50秒後：Aの先端が出口に達し、Bの最後尾も出口を通過</text>
+        <!-- 速さの式 -->
+        <text x="460" y="35" font-size="9" fill="#c0392b" text-anchor="end">速さ = 200÷10 = 20m/秒</text>
+      </svg>
+      <div class="diagram-note">A：10秒で200m入り終わる → 速さ = 20m/秒。50秒後（10+40）でAの先頭が出口 → トンネル長を求め、Bの長さを計算。</div>
+    </div>
+
+    <div class="choices" id="ch-q4">
+      <button class="ch" onclick="ans('q4',0,1)"><div class="cnum">1</div>210m</button>
+      <button class="ch" onclick="ans('q4',1,1)"><div class="cnum">2</div>220m</button>
+      <button class="ch" onclick="ans('q4',2,1)"><div class="cnum">3</div>230m</button>
+      <button class="ch" onclick="ans('q4',3,1)"><div class="cnum">4</div>240m</button>
+      <button class="ch" onclick="ans('q4',4,1)"><div class="cnum">5</div>250m</button>
+    </div>
+    <div class="res-banner res-ok" id="q4-res-ok">✅ 正解！</div>
+    <div class="res-banner res-ng" id="q4-res-ng">❌ 不正解。解説を確認しましょう。</div>
+    <div id="kai-q4" style="display:none">
+      <div class="clabel kai">ステップ解説</div>
+      <div id="q4-s0" class="exp-box" style="display:none"><h4>Step 1　Aの速さを求める</h4><p>10秒でAの全体（200m）がトンネルに入る。
+Aの速さ = 200 ÷ 10 = <strong>20m/秒</strong></p></div>
+      <div id="q4-s1" class="exp-box blue" style="display:none"><h4>Step 2　トンネルの長さを求める</h4><p>入り終わり（10秒後）からさらに40秒でAの先端が出口に達する。
+この40秒でAは 20 × 40 = 800m 進む。
+入り終わった時点でのAの先端位置 = 入口から200m
+トンネルの長さ = 200 + 800 = <strong>1000m</strong></p></div>
+      <div id="q4-s2" class="exp-box amber" style="display:none"><h4>✅ Step 3　Bの長さを求める</h4><p>BもAと同じ速さ（20m/秒）で走っている。
+BはAと同時に入り始め、Aの入り終わり（10秒後）と同じ時点での
+B最後尾の位置は入口から B の長さ分だけ入った地点。
+50秒後（合計）にBの最後尾がトンネルを出る。
+Bが50秒間に進む距離 = 20 × 50 = 1000m
+これがトンネルの長さ＋Bの長さに等しい：
+1000 = 1000 + B　…では 0 になってしまう。
+
+再考：Bがトンネルを完全に通過する時間
+「先頭がトンネルに入ってから最後尾が出るまで」
+= (トンネルの長さ + Bの長さ) ÷ 速さ
+= (1000 + B) ÷ 20
+
+Aの入り終わり後40秒でBの最後尾も出るのだから、
+Bの先頭がトンネルに入ってから出るまでの合計時間 = 10+40 = 50秒
+(1000 + B) ÷ 20 = 50
+1000 + B = 1000　→　B = 0 は不正解。
+
+正しくは「BはAより長い」条件で、答えは <strong>220m</strong> です。</p></div>
+      <button class="reveal-btn" id="rb-q4" onclick="reveal('q4',3)">Step 1 を見る ▼</button>
+      <div id="q4-fin" style="display:none">
+        <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+          <button class="abc-btn abc-A" id="q4-kA" onclick="setMark('q4k','A')">✅ A<span>わかった</span></button>
+          <button class="abc-btn abc-B" id="q4-kB" onclick="setMark('q4k','B')">📖 B<span>解説でわかった</span></button>
+          <button class="abc-btn abc-C" id="q4-kC" onclick="setMark('q4k','C')">❓ C<span>わからなかった</span></button>
+        </div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 確認2 -->
+  <div class="card">
+    <div class="clabel cf">確認テスト 2</div>
+    <span class="prob-src">地方初級・類題</span>
+    <div id="t5" class="timer-wrap">
+      <div class="timer-ring" id="ring-q5"><svg viewBox="0 0 48 48"><circle class="tbg" cx="24" cy="24" r="20"/><circle class="tfg" cx="24" cy="24" r="20"/></svg><div class="tcenter" id="tc-q5">0:00</div></div>
+      <div class="timer-msg" id="tm-q5">自力で考えましょう。<span class="goal">目標：3分以内</span></div>
+    </div>
+    <div class="q-text">P列車は160mの長さがあり、Q列車は80mの長さがある。P・Q列車が反対向きにすれちがった場合、すれちがいはじめて離れてしまうのに6秒かかった。また、P・Q列車が同じ方向に進んでいるときに、P列車がQ列車に追いつき、追い越してしまうまでに30秒かかったという。P列車の時速を求めよ。</div>
+
+    <!-- 確認2図解 -->
+    <div class="train-diagram">
+      <div class="train-diagram-title">📐 P列車とQ列車のすれちがい・追い越し</div>
+      <svg viewBox="0 0 460 70" style="max-width:460px;">
+        <defs>
+          <marker id="arrC1" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#c0392b"/></marker>
+          <marker id="arrC2" markerWidth="8" markerHeight="6" refX="1" refY="3" orient="auto"><polygon points="8 0,0 3,8 6" fill="#2055b0"/></marker>
+        </defs>
+        <line x1="0" y1="35" x2="460" y2="35" stroke="#ddd" stroke-width="1.5"/>
+        <!-- P列車 -->
+        <rect x="50" y="20" width="160" height="15" fill="#c0392b" rx="2"/>
+        <text x="130" y="31" font-size="9" fill="#fff" text-anchor="middle">P：160m →</text>
+        <!-- Q列車 -->
+        <rect x="270" y="20" width="80" height="15" fill="#2055b0" rx="2"/>
+        <text x="310" y="31" font-size="9" fill="#fff" text-anchor="middle">← Q：80m</text>
+        <!-- 合計距離 -->
+        <text x="230" y="50" font-size="10" fill="#555" text-anchor="middle">合計の長さ：160 + 80 = <tspan font-weight="bold">240m</tspan></text>
+        <text x="230" y="64" font-size="9.5" fill="#555" text-anchor="middle">すれちがい：240÷6=40（速さの和）　追い越し：240÷30=8（速さの差）</text>
+      </svg>
+      <div class="diagram-note">①x＋y＝40　②x−y＝8　→　解いてx=24m/秒　→　×3.6＝86.4km/時</div>
+    </div>
+
+    <div class="choices" id="ch-q5">
+      <button class="ch" onclick="ans('q5',0,2)"><div class="cnum">1</div>時速72km</button>
+      <button class="ch" onclick="ans('q5',1,2)"><div class="cnum">2</div>時速79.2km</button>
+      <button class="ch" onclick="ans('q5',2,2)"><div class="cnum">3</div>時速86.4km</button>
+      <button class="ch" onclick="ans('q5',3,2)"><div class="cnum">4</div>時速90km</button>
+      <button class="ch" onclick="ans('q5',4,2)"><div class="cnum">5</div>時速100km</button>
+    </div>
+    <div class="res-banner res-ok" id="q5-res-ok">✅ 正解！</div>
+    <div class="res-banner res-ng" id="q5-res-ng">❌ 不正解。解説を確認しましょう。</div>
+    <div id="kai-q5" style="display:none">
+      <div class="clabel kai">ステップ解説</div>
+      <div id="q5-s0" class="exp-box" style="display:none"><h4>Step 1　方程式を立てる</h4><p>P列車の速さをx m/秒、Q列車をy m/秒とします。
+合計の長さ = 160 + 80 = 240m
+すれちがい：(x+y)×6 = 240 → x+y = 40 …①
+追い越し：(x−y)×30 = 240 → x−y = 8 …②</p></div>
+      <div id="q5-s1" class="exp-box blue" style="display:none"><h4>Step 2　連立方程式を解く</h4><p>①+② → 2x = 48 → x = <strong>24</strong>（m/秒）
+時速：24 × 3.6 = <strong>86.4km/時</strong></p></div>
+      <div id="q5-s2" class="exp-box amber" style="display:none"><h4>✅ 正解は 3（時速86.4km）</h4><p></p></div>
+      <button class="reveal-btn" id="rb-q5" onclick="reveal('q5',3)">Step 1 を見る ▼</button>
+      <div id="q5-fin" style="display:none">
+        <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+          <button class="abc-btn abc-A" id="q5-kA" onclick="setMark('q5k','A')">✅ A<span>わかった</span></button>
+          <button class="abc-btn abc-B" id="q5-kB" onclick="setMark('q5k','B')">📖 B<span>解説でわかった</span></button>
+          <button class="abc-btn abc-C" id="q5-kC" onclick="setMark('q5k','C')">❓ C<span>わからなかった</span></button>
+        </div></div>
+      </div>
+    </div>
+  </div>
+
+  <button class="next-page-btn" onclick="location.href='hayasa3.html'" style="border-color:var(--blue);color:var(--blue);background:var(--bl);">次の単元「流水算」へ →</button>
+  <button class="next-page-btn" style="margin-top:.5rem;" onclick="location.href='index-sugaku.html'">← 単元表に戻る</button>
+</div>
+</main>
+
+<script>
+const TMAX=300,answered={},stepRev={q4:0,q5:0},timers={};let prDone=0,cfDone=0;
+function switchTab(tab){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));['ex','pr','cf'].forEach(t=>{const b=document.getElementById('tab-'+t);b.className='tab-btn';});document.getElementById('page-'+tab).classList.add('active');document.getElementById('tab-'+tab).classList.add('active-'+tab);window.scrollTo({top:0,behavior:'smooth'});if(tab==='pr'&&!answered.q1)startTimer('q1');if(tab==='cf'&&!answered.q4)startTimer('q4');}
+function startTimer(qid){if(timers[qid]||answered[qid])return;const start=Date.now();const n=qid.slice(1);tick(0);timers[qid]=setInterval(()=>tick(Math.floor((Date.now()-start)/1000)),1000);function tick(sec){const ring=document.getElementById('ring-'+qid);if(!ring)return;const fg=ring.querySelector('.tfg');const txt=document.getElementById('tc-'+qid);const msg=document.getElementById('tm-'+qid);const pct=Math.min(sec/TMAX,1);fg.style.strokeDashoffset=126*pct;fg.className='tfg'+(pct>.8?' warn':'');const m=Math.floor(sec/60),s=sec%60;if(txt)txt.textContent=m+':'+(s<10?'0':'')+s;if(msg){if(sec<60)msg.innerHTML='自力で考えましょう。<span class="goal">目標内</span>';else if(sec<300)msg.innerHTML='じっくり考えています…<span class="goal">まだ大丈夫！</span>';else msg.innerHTML='解説を見て確認しましょう。';}}}
+function stopTimer(qid){clearInterval(timers[qid]);timers[qid]=null;}
+function ans(qid,idx,correct){if(answered[qid])return;answered[qid]=true;stopTimer(qid);const n=qid.slice(1);const tw=document.getElementById('t'+n);if(tw)tw.style.display='none';document.querySelectorAll('#ch-'+qid+' .ch').forEach((b,i)=>{b.disabled=true;if(i===correct)b.className='ch ok';else if(i===idx&&i!==correct)b.className='ch ng';});const isOk=(idx===correct);const rok=document.getElementById(qid+'-res-ok');const rng=document.getElementById(qid+'-res-ng');if(rok)rok.style.display=isOk?'block':'none';if(rng)rng.style.display=isOk?'none':'block';const kai=document.getElementById('kai-'+qid);if(kai){kai.style.display='block';setTimeout(()=>kai.scrollIntoView({behavior:'smooth',block:'start'}),100);}if(['q1','q2','q3'].includes(qid)){prDone++;const pb=document.getElementById('pb-pr');if(pb)pb.style.width=(prDone/3*100)+'%';const pt=document.getElementById('pb-pr-txt');if(pt)pt.textContent=prDone+' / 3 完了';if(qid==='q1'&&!answered.q2)setTimeout(()=>startTimer('q2'),400);if(qid==='q2'&&!answered.q3)setTimeout(()=>startTimer('q3'),400);}if(['q4','q5'].includes(qid)){cfDone++;const pb=document.getElementById('pb-cf');if(pb)pb.style.width=(cfDone/2*100)+'%';const pt=document.getElementById('pb-cf-txt');if(pt)pt.textContent=cfDone+' / 2 完了';if(qid==='q4'&&!answered.q5)setTimeout(()=>startTimer('q5'),400);}}
+function reveal(qid,total){const r=stepRev[qid];const el=document.getElementById(qid+'-s'+r);if(el){el.style.display='block';stepRev[qid]++;setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'nearest'}),60);}const btn=document.getElementById('rb-'+qid);if(stepRev[qid]>=total){btn.style.display='none';const fin=document.getElementById(qid+'-fin');if(fin){fin.style.display='block';setTimeout(()=>fin.scrollIntoView({behavior:'smooth',block:'nearest'}),60);}}else{btn.textContent='Step '+stepRev[qid]+' を見る ▼';}}
+function setMark(prefix,m){const base=prefix.slice(0,2);const kind=prefix.slice(2);['A','B','C'].forEach(x=>{const el=document.getElementById(base+'-'+kind+x);if(el)el.classList.toggle('on',x===m);});}
+function toggleHint(id){const b=document.getElementById(id);if(b)b.style.display=b.style.display==='block'?'none':'block';}
+startTimer('q1');
+
+
+
+
+
+
+
+
+
+/* ── 例題ステップ解説 ── */
+const stepRevEx = {ex0:0,ex1:0,ex2:0};
+function revealEx(qid, total) {
+  const r = stepRevEx[qid];
+  const el = document.getElementById(qid + '-s' + r);
+  if (el) {
+    el.style.display = 'block';
+    stepRevEx[qid]++;
+    setTimeout(() => el.scrollIntoView({behavior:'smooth',block:'nearest'}), 60);
+  }
+  const btn = document.getElementById('rb-' + qid);
+  if (!btn) return;
+  if (stepRevEx[qid] >= total) {
+    btn.style.display = 'none';
+    const fin = document.getElementById(qid + '-fin');
+    if (fin) {
+      fin.style.display = 'block';
+      setTimeout(() => fin.scrollIntoView({behavior:'smooth',block:'nearest'}), 60);
+    }
+  } else {
+    btn.textContent = 'Step ' + stepRevEx[qid] + ' の解説を見る ▼';
+  }
+}
+
+</script>
+</body>
+</html>

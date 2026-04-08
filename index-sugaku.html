@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAMBAシステム｜数的推理　単元表</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1a2236;--paper:#f5f3ee;--card:#fffefb;
+  --pink:#d93652;--teal:#0d9478;--blue:#2055b0;--amber:#a86000;
+  --gold:#c8972a;--gold2:#f0c040;
+  --muted:#7a8299;--border:#ddd8cc;
+  --A:#0d9478;--B:#2055b0;--C:#d93652;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--ink);font-size:15px;min-height:100vh;}
+
+/* ━━━ ヘッダー ━━━ */
+.hdr{background:var(--ink);color:#fff;padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 3px 14px rgba(0,0,0,.4);}
+.hdr-left h1{font-family:'Shippori Mincho',serif;font-size:1.1em;font-weight:700;letter-spacing:.04em;}
+.hdr-left p{font-size:.7em;opacity:.55;letter-spacing:.1em;margin-top:1px;}
+.streak-badge{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:6px 14px;}
+.streak-badge .flame{font-size:1.3em;}
+.streak-badge .days{font-size:.78em;font-weight:700;color:var(--gold2);}
+
+/* ━━━ サマリーバー ━━━ */
+.summary-bar{background:#253060;padding:12px 20px;display:flex;gap:20px;align-items:center;flex-wrap:wrap;border-bottom:2px solid var(--gold);}
+.sbar-item{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.sbar-num{font-size:1.4em;font-weight:700;color:var(--gold2);font-variant-numeric:tabular-nums;}
+.sbar-lbl{font-size:.68em;color:rgba(255,255,255,.65);letter-spacing:.06em;}
+.sbar-div{width:1px;background:rgba(255,255,255,.2);height:36px;margin:0 4px;}
+.progress-wrap{flex:1;min-width:200px;}
+.progress-lbl{font-size:.7em;color:rgba(255,255,255,.65);margin-bottom:4px;}
+.progress-bar{background:rgba(255,255,255,.15);border-radius:20px;height:10px;overflow:hidden;}
+.progress-fill{background:linear-gradient(90deg,var(--gold),var(--gold2));height:100%;border-radius:20px;transition:.5s;}
+.progress-pct{font-size:.72em;color:var(--gold2);margin-top:3px;font-weight:700;}
+
+/* ━━━ メイン ━━━ */
+.main{max-width:860px;margin:24px auto;padding:0 14px 80px;}
+
+/* ━━━ バッジ ━━━ */
+.badge-section{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+.badge-title{font-size:.82em;font-weight:700;color:var(--muted);letter-spacing:.1em;margin-bottom:12px;}
+.badges{display:flex;flex-wrap:wrap;gap:10px;}
+.badge{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 14px;border-radius:8px;border:2px solid var(--border);background:#f8f8f8;min-width:80px;transition:.2s;}
+.badge.earned{border-color:var(--gold);background:linear-gradient(135deg,#fffbea,#fff8d0);box-shadow:0 2px 8px rgba(200,151,42,.2);}
+.badge.locked{opacity:.35;filter:grayscale(1);}
+.badge-icon{font-size:1.6em;}
+.badge-name{font-size:.68em;font-weight:700;color:var(--ink);text-align:center;line-height:1.3;}
+
+/* ━━━ カレンダー ━━━ */
+.cal-section{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+.cal-title{font-size:.82em;font-weight:700;color:var(--muted);letter-spacing:.1em;margin-bottom:12px;}
+.cal-grid{display:flex;flex-wrap:wrap;gap:4px;}
+.cal-day{width:16px;height:16px;border-radius:3px;background:var(--border);}
+.cal-day.s1{background:#c6e48b;} .cal-day.s2{background:#7bc96f;} .cal-day.s3{background:#239a3b;} .cal-day.s4{background:#196127;}
+.cal-lbl{display:flex;gap:6px;align-items:center;margin-top:8px;font-size:.7em;color:var(--muted);}
+.cal-lbl-dot{width:12px;height:12px;border-radius:2px;}
+
+/* ━━━ カテゴリ ━━━ */
+.cat-section{margin-bottom:28px;}
+.cat-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.cat-bar{width:5px;border-radius:3px;height:32px;flex-shrink:0;}
+.cat-bar.hayasa{background:var(--blue);}
+.cat-bar.wariai{background:var(--pink);}
+.cat-bar.kakuritsu{background:var(--teal);}
+.cat-bar.seisuui{background:var(--amber);}
+.cat-title{font-size:1.05em;font-weight:700;letter-spacing:.04em;}
+.cat-sub{font-size:.75em;color:var(--muted);margin-left:4px;}
+.cat-count{font-size:.78em;color:var(--muted);margin-left:auto;font-weight:700;}
+
+/* ━━━ 単元カード ━━━ */
+.unit-card{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.05);transition:.15s;}
+.unit-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.1);transform:translateY(-1px);}
+.unit-top{display:flex;align-items:center;gap:12px;padding:13px 16px;}
+.unit-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82em;flex-shrink:0;color:#fff;}
+.num-blue{background:var(--blue);}
+.num-pink{background:var(--pink);}
+.num-teal{background:var(--teal);}
+.num-amber{background:var(--amber);}
+.unit-title{flex:1;font-size:.95em;font-weight:700;line-height:1.35;}
+.unit-sub{font-size:.75em;color:var(--muted);font-weight:400;display:block;margin-top:2px;}
+.unit-tags{display:flex;gap:5px;flex-shrink:0;flex-wrap:wrap;}
+.tag{font-size:.65em;padding:2px 7px;border-radius:10px;font-weight:700;letter-spacing:.04em;}
+.tag-A{background:#e3f8f0;color:var(--teal);}
+.tag-B{background:#eaf0fb;color:var(--blue);}
+.tag-C{background:#fde8eb;color:var(--pink);}
+.tag-new{background:#fff3cd;color:#856404;}
+/* 理解度 */
+.abc-row{display:flex;gap:6px;padding:0 16px 10px;align-items:center;}
+.abc-lbl-sm{font-size:.72em;color:var(--muted);font-weight:700;margin-right:4px;letter-spacing:.06em;}
+.abc-btn{width:34px;height:28px;border:2px solid var(--border);border-radius:6px;font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:.82em;background:#f5f5f5;color:var(--muted);cursor:pointer;transition:.15s;flex-shrink:0;}
+.abc-btn:hover{border-color:var(--muted);}
+.abc-btn.A{background:var(--A);color:#fff;border-color:var(--A);}
+.abc-btn.B{background:var(--B);color:#fff;border-color:var(--B);}
+.abc-btn.C{background:var(--C);color:#fff;border-color:var(--C);}
+/* 学習回数・最終日 */
+.stat-row{display:flex;gap:14px;padding:0 16px 10px;align-items:center;flex-wrap:wrap;}
+.stat-item{display:flex;align-items:center;gap:4px;font-size:.76em;color:var(--muted);}
+.stat-item .val{font-weight:700;color:var(--ink);}
+.repeat-dots{display:flex;gap:3px;}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--border);}
+.dot.done{background:var(--gold);}
+.dot.done.perfect{background:var(--teal);}
+/* リンク */
+.link-row{display:flex;gap:8px;padding:0 16px 14px;flex-wrap:wrap;}
+.page-link{text-decoration:none;font-family:'Noto Sans JP',sans-serif;font-size:.8em;font-weight:700;padding:7px 16px;border-radius:6px;border:1.5px solid var(--border);color:var(--ink);background:#f8f8f8;transition:.13s;display:flex;align-items:center;gap:5px;}
+.page-link:hover{background:var(--blue);color:#fff;border-color:var(--blue);}
+.page-link.main-link{background:var(--blue);color:#fff;border-color:var(--blue);}
+.page-link.main-link:hover{background:#163d73;}
+.page-link.locked-link{opacity:.45;cursor:not-allowed;pointer-events:none;}
+
+/* ━━━ 準備中カード ━━━ */
+.unit-card.coming{opacity:.6;}
+.coming-badge{font-size:.72em;color:var(--muted);background:#f0ede6;border:1px solid var(--border);border-radius:8px;padding:3px 10px;margin-left:auto;}
+
+/* ━━━ モーダル ━━━ */
+.achieve-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:900;align-items:center;justify-content:center;}
+.achieve-modal.open{display:flex;}
+.achieve-box{background:#fff;border-radius:18px;padding:36px 40px;text-align:center;max-width:360px;width:90%;box-shadow:0 12px 48px rgba(0,0,0,.3);position:relative;overflow:hidden;}
+.achieve-box::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--gold),var(--gold2),var(--gold));}
+.achieve-emoji{font-size:3em;margin-bottom:10px;}
+.achieve-title{font-size:1.3em;font-weight:700;margin-bottom:8px;}
+.achieve-sub{font-size:.88em;color:var(--muted);margin-bottom:20px;line-height:1.6;}
+.achieve-close{font-family:'Noto Sans JP',sans-serif;font-size:.9em;font-weight:700;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:10px 28px;cursor:pointer;}
+#cnv{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;}
+</style>
+</head>
+<body>
+<canvas id="cnv"></canvas>
+
+<!-- ヘッダー -->
+<header class="hdr">
+  <div class="hdr-left">
+    <h1>GAMBA｜数的推理　単元表</h1>
+    <p>公務員試験対策 数的推理システム</p>
+  </div>
+  <div class="streak-badge">
+    <span class="flame">🔥</span>
+    <span class="days" id="streakDisp">0日連続</span>
+  </div>
+</header>
+
+<!-- サマリーバー -->
+<div class="summary-bar">
+  <div class="sbar-item"><div class="sbar-num" id="sumTotal">0</div><div class="sbar-lbl">総学習回数</div></div>
+  <div class="sbar-div"></div>
+  <div class="sbar-item"><div class="sbar-num" id="sumA">0</div><div class="sbar-lbl">理解A（完璧）</div></div>
+  <div class="sbar-item"><div class="sbar-num" id="sumB">0</div><div class="sbar-lbl">理解B（良好）</div></div>
+  <div class="sbar-item"><div class="sbar-num" id="sumC">0</div><div class="sbar-lbl">理解C（要復習）</div></div>
+  <div class="sbar-div"></div>
+  <div class="progress-wrap">
+    <div class="progress-lbl">全単元の習熟度</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="progress-pct" id="progressPct">0%</div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- バッジ -->
+<div class="badge-section">
+  <div class="badge-title">🏅 達成バッジ</div>
+  <div class="badges" id="badgeArea"></div>
+</div>
+
+<!-- カレンダー -->
+<div class="cal-section">
+  <div class="cal-title">📅 学習カレンダー（過去84日）</div>
+  <div class="cal-grid" id="calGrid"></div>
+  <div class="cal-lbl">
+    <span>少</span>
+    <div class="cal-lbl-dot cal-day"></div>
+    <div class="cal-lbl-dot cal-day s1"></div>
+    <div class="cal-lbl-dot cal-day s2"></div>
+    <div class="cal-lbl-dot cal-day s3"></div>
+    <div class="cal-lbl-dot cal-day s4"></div>
+    <span>多</span>
+  </div>
+</div>
+
+<!-- ━━━ 速さ ━━━ -->
+<div class="cat-section">
+  <div class="cat-header">
+    <div class="cat-bar hayasa"></div>
+    <div>
+      <div class="cat-title">速さ<span class="cat-sub">旅人算・通過算・流水算・時計算</span></div>
+    </div>
+    <div class="cat-count" id="cnt-hayasa"></div>
+  </div>
+
+  <!-- 速さ①基本・旅人算 -->
+  <div class="unit-card" id="uc-hayasa1">
+    <div class="unit-top">
+      <div class="unit-num num-blue">①</div>
+      <div class="unit-title">時間・速さ・距離の基本 ／ 旅人算
+        <span class="unit-sub">出会い算・追いかけ算・池の周回</span>
+      </div>
+      <div class="unit-tags">
+        <span class="tag tag-A">重要度A</span>
+      </div>
+    </div>
+    <div class="abc-row">
+      <span class="abc-lbl-sm">理解度</span>
+      <button class="abc-btn" data-id="hayasa1" data-grade="A" onclick="setGrade(this)">A</button>
+      <button class="abc-btn" data-id="hayasa1" data-grade="B" onclick="setGrade(this)">B</button>
+      <button class="abc-btn" data-id="hayasa1" data-grade="C" onclick="setGrade(this)">C</button>
+    </div>
+    <div class="stat-row">
+      <div class="stat-item">学習回数：<span class="val" id="cnt-hayasa1">0</span>回</div>
+      <div class="repeat-dots" id="dots-hayasa1"></div>
+      <div class="stat-item">最終：<span class="val" id="last-hayasa1">—</span></div>
+    </div>
+    <div class="link-row">
+      <a class="page-link main-link" href="hayasa1.html">📖 学習する</a>
+      <a class="page-link" href="hayasa1.html#page-cf">✅ 確認テスト</a>
+    </div>
+  </div>
+
+  <!-- 速さ②通過算 -->
+  <div class="unit-card" id="uc-hayasa2">
+    <div class="unit-top">
+      <div class="unit-num num-blue">②</div>
+      <div class="unit-title">通過算（列車問題）
+        <span class="unit-sub">渡りきる・隠れる・すれちがう</span>
+      </div>
+      <div class="unit-tags">
+        <span class="tag tag-A">重要度A</span>
+      </div>
+    </div>
+    <div class="abc-row">
+      <span class="abc-lbl-sm">理解度</span>
+      <button class="abc-btn" data-id="hayasa2" data-grade="A" onclick="setGrade(this)">A</button>
+      <button class="abc-btn" data-id="hayasa2" data-grade="B" onclick="setGrade(this)">B</button>
+      <button class="abc-btn" data-id="hayasa2" data-grade="C" onclick="setGrade(this)">C</button>
+    </div>
+    <div class="stat-row">
+      <div class="stat-item">学習回数：<span class="val" id="cnt-hayasa2">0</span>回</div>
+      <div class="repeat-dots" id="dots-hayasa2"></div>
+      <div class="stat-item">最終：<span class="val" id="last-hayasa2">—</span></div>
+    </div>
+    <div class="link-row">
+      <a class="page-link main-link" href="hayasa2.html">📖 学習する</a>
+      <a class="page-link" href="hayasa2.html#page-cf">✅ 確認テスト</a>
+    </div>
+  </div>
+
+  <!-- 速さ③流水算 -->
+  <div class="unit-card" id="uc-hayasa3">
+    <div class="unit-top">
+      <div class="unit-num num-blue">③</div>
+      <div class="unit-title">流水算
+        <span class="unit-sub">上り・下り・静水時の速さ・流速</span>
+      </div>
+      <div class="unit-tags">
+        <span class="tag tag-B">重要度B</span>
+      </div>
+    </div>
+    <div class="abc-row">
+      <span class="abc-lbl-sm">理解度</span>
+      <button class="abc-btn" data-id="hayasa3" data-grade="A" onclick="setGrade(this)">A</button>
+      <button class="abc-btn" data-id="hayasa3" data-grade="B" onclick="setGrade(this)">B</button>
+      <button class="abc-btn" data-id="hayasa3" data-grade="C" onclick="setGrade(this)">C</button>
+    </div>
+    <div class="stat-row">
+      <div class="stat-item">学習回数：<span class="val" id="cnt-hayasa3">0</span>回</div>
+      <div class="repeat-dots" id="dots-hayasa3"></div>
+      <div class="stat-item">最終：<span class="val" id="last-hayasa3">—</span></div>
+    </div>
+    <div class="link-row">
+      <a class="page-link main-link" href="hayasa3.html">📖 学習する</a>
+      <a class="page-link" href="hayasa3.html#page-cf">✅ 確認テスト</a>
+    </div>
+  </div>
+
+  <!-- 速さ④時計算 -->
+  <div class="unit-card" id="uc-hayasa4">
+    <div class="unit-top">
+      <div class="unit-num num-blue">④</div>
+      <div class="unit-title">時計算 ／ 出会い問題（池の周回）
+        <span class="unit-sub">長針・短針の角度・追いかけ算応用</span>
+      </div>
+      <div class="unit-tags">
+        <span class="tag tag-B">重要度B</span>
+      </div>
+    </div>
+    <div class="abc-row">
+      <span class="abc-lbl-sm">理解度</span>
+      <button class="abc-btn" data-id="hayasa4" data-grade="A" onclick="setGrade(this)">A</button>
+      <button class="abc-btn" data-id="hayasa4" data-grade="B" onclick="setGrade(this)">B</button>
+      <button class="abc-btn" data-id="hayasa4" data-grade="C" onclick="setGrade(this)">C</button>
+    </div>
+    <div class="stat-row">
+      <div class="stat-item">学習回数：<span class="val" id="cnt-hayasa4">0</span>回</div>
+      <div class="repeat-dots" id="dots-hayasa4"></div>
+      <div class="stat-item">最終：<span class="val" id="last-hayasa4">—</span></div>
+    </div>
+    <div class="link-row">
+      <a class="page-link main-link" href="hayasa4.html">📖 学習する</a>
+      <a class="page-link" href="hayasa4.html#page-cf">✅ 確認テスト</a>
+    </div>
+  </div>
+</div>
+
+<!-- ━━━ 割合・比 ━━━ -->
+<div class="cat-section">
+  <div class="cat-header">
+    <div class="cat-bar wariai"></div>
+    <div>
+      <div class="cat-title">割合・比<span class="cat-sub">比・割合・損益算・濃度</span></div>
+    </div>
+    <div class="cat-count" id="cnt-wariai"></div>
+  </div>
+
+  <div class="unit-card coming" id="uc-wariai1">
+    <div class="unit-top">
+      <div class="unit-num num-pink">①</div>
+      <div class="unit-title">比と割合の基本
+        <span class="unit-sub">比の概念・内分・外分・連比</span>
+      </div>
+      <span class="coming-badge">準備中</span>
+    </div>
+    <div class="link-row">
+      <a class="page-link locked-link" href="#">📖 学習する（準備中）</a>
+    </div>
+  </div>
+
+  <div class="unit-card coming" id="uc-wariai2">
+    <div class="unit-top">
+      <div class="unit-num num-pink">②</div>
+      <div class="unit-title">損益算・売買損益
+        <span class="unit-sub">原価・定価・売価・利益率</span>
+      </div>
+      <span class="coming-badge">準備中</span>
+    </div>
+    <div class="link-row">
+      <a class="page-link locked-link" href="#">📖 学習する（準備中）</a>
+    </div>
+  </div>
+
+  <div class="unit-card coming" id="uc-wariai3">
+    <div class="unit-top">
+      <div class="unit-num num-pink">③</div>
+      <div class="unit-title">濃度算
+        <span class="unit-sub">食塩水の混合・てんびん法</span>
+      </div>
+      <span class="coming-badge">準備中</span>
+    </div>
+    <div class="link-row">
+      <a class="page-link locked-link" href="#">📖 学習する（準備中）</a>
+    </div>
+  </div>
+</div>
+
+<!-- ━━━ 場合の数・確率 ━━━ -->
+<div class="cat-section">
+  <div class="cat-header">
+    <div class="cat-bar kakuritsu"></div>
+    <div>
+      <div class="cat-title">場合の数・確率<span class="cat-sub">順列・組合せ・確率</span></div>
+    </div>
+    <div class="cat-count" id="cnt-kakuritsu"></div>
+  </div>
+
+  <div class="unit-card coming">
+    <div class="unit-top">
+      <div class="unit-num num-teal">①</div>
+      <div class="unit-title">場合の数（順列・組合せ）
+        <span class="unit-sub">nPr・nCr・重複・円順列</span>
+      </div>
+      <span class="coming-badge">準備中</span>
+    </div>
+    <div class="link-row"><a class="page-link locked-link" href="#">📖 学習する（準備中）</a></div>
+  </div>
+
+  <div class="unit-card coming">
+    <div class="unit-top">
+      <div class="unit-num num-teal">②</div>
+      <div class="unit-title">確率
+        <span class="unit-sub">基本確率・余事象・条件付き確率</span>
+      </div>
+      <span class="coming-badge">準備中</span>
+    </div>
+    <div class="link-row"><a class="page-link locked-link" href="#">📖 学習する（準備中）</a></div>
+  </div>
+</div>
+
+<!-- ━━━ 整数・数の性質 ━━━ -->
+<div class="cat-section">
+  <div class="cat-header">
+    <div class="cat-bar seisuui"></div>
+    <div>
+      <div class="cat-title">整数・数の性質<span class="cat-sub">約数・倍数・余り・素因数分解</span></div>
+    </div>
+    <div class="cat-count" id="cnt-seisuui"></div>
+  </div>
+
+  <div class="unit-card coming">
+    <div class="unit-top">
+      <div class="unit-num num-amber">①</div>
+      <div class="unit-title">約数・倍数・最大公約数・最小公倍数
+        <span class="unit-sub">GCD・LCM・素因数分解</span>
+      </div>
+      <span class="coming-badge">準備中</span>
+    </div>
+    <div class="link-row"><a class="page-link locked-link" href="#">📖 学習する（準備中）</a></div>
+  </div>
+
+  <div class="unit-card coming">
+    <div class="unit-top">
+      <div class="unit-num num-amber">②</div>
+      <div class="unit-title">余りの問題・不定方程式
+        <span class="unit-sub">割り算の余り・ユークリッド互除法</span>
+      </div>
+      <span class="coming-badge">準備中</span>
+    </div>
+    <div class="link-row"><a class="page-link locked-link" href="#">📖 学習する（準備中）</a></div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- モーダル -->
+<div class="achieve-modal" id="achieveModal">
+  <div class="achieve-box">
+    <div class="achieve-emoji" id="achieveEmoji">🏅</div>
+    <div class="achieve-title" id="achieveTitle">バッジ獲得！</div>
+    <div class="achieve-sub" id="achieveSub"></div>
+    <button class="achieve-close" onclick="closeAchieve()">閉じる</button>
+  </div>
+</div>
+
+<script>
+const LS_KEY='gamba_sugaku_v1';
+const LS_CAL='gamba_sugaku_cal_v1';
+
+const ALL_UNITS = ['hayasa1','hayasa2','hayasa3','hayasa4'];
+const HAYASA_UNITS = ['hayasa1','hayasa2','hayasa3','hayasa4'];
+
+const BADGES = [
+  {id:'first_study',icon:'🌱',name:'学習スタート',cond:d=>ALL_UNITS.some(id=>getCount(d,id)>0)},
+  {id:'hayasa_all',icon:'🚀',name:'速さ全制覇',cond:d=>HAYASA_UNITS.every(id=>getGrade(d,id))},
+  {id:'all_A',icon:'🏆',name:'全単元A評価',cond:d=>HAYASA_UNITS.every(id=>getGrade(d,id)==='A')},
+  {id:'study_3days',icon:'🔥',name:'3日連続',cond:d=>getStreak()>=3},
+  {id:'study_7days',icon:'⚡',name:'7日連続',cond:d=>getStreak()>=7},
+  {id:'total10',icon:'💪',name:'累計10回',cond:d=>ALL_UNITS.reduce((s,id)=>s+getCount(d,id),0)>=10},
+  {id:'total30',icon:'🎯',name:'累計30回',cond:d=>ALL_UNITS.reduce((s,id)=>s+getCount(d,id),0)>=30},
+];
+
+function loadData(){return JSON.parse(localStorage.getItem(LS_KEY)||'{}');}
+function saveData(d){localStorage.setItem(LS_KEY,JSON.stringify(d));}
+function getGrade(d,id){return d[id]?.grade||'';}
+function getCount(d,id){return d[id]?.count||0;}
+function getLast(d,id){return d[id]?.last||'';}
+
+function setGrade(btn){
+  const id=btn.dataset.id, grade=btn.dataset.grade;
+  const d=loadData();
+  if(!d[id])d[id]={grade:'',count:0,last:''};
+  const isToggle=(d[id].grade===grade);
+  d[id].grade=isToggle?'':grade;
+  if(!isToggle){
+    d[id].count++;
+    d[id].last=new Date().toLocaleDateString('ja-JP',{month:'numeric',day:'numeric'});
+    // カレンダーに記録
+    const cal=JSON.parse(localStorage.getItem(LS_CAL)||'{}');
+    const today=new Date().toISOString().slice(0,10);
+    cal[today]=(cal[today]||0)+1;
+    localStorage.setItem(LS_CAL,JSON.stringify(cal));
+  }
+  saveData(d);
+  render();
+  checkBadges(d);
+}
+
+function renderDots(id,cnt,grade){
+  const el=document.getElementById('dots-'+id);
+  if(!el)return;
+  const max=7;let html='';
+  for(let i=0;i<max;i++){const done=i<cnt;const cls=done?(grade==='A'?'done perfect':'done'):'';html+=`<div class="dot ${cls}"></div>`;}
+  if(cnt>max)html+=`<span style="font-size:.7em;color:var(--muted);margin-left:2px">+${cnt-max}</span>`;
+  el.innerHTML=html;
+}
+
+function getStreak(){
+  const cal=JSON.parse(localStorage.getItem(LS_CAL)||'{}');
+  let streak=0;const today=new Date();
+  for(let i=0;i<365;i++){
+    const d=new Date(today);d.setDate(d.getDate()-i);
+    const k=d.toISOString().slice(0,10);
+    if(cal[k]&&cal[k]>0)streak++;else break;
+  }
+  return streak;
+}
+
+function render(){
+  const d=loadData();
+  let cntA=0,cntB=0,cntC=0,total=0;
+
+  ALL_UNITS.forEach(id=>{
+    const grade=getGrade(d,id);
+    const cnt=getCount(d,id);
+    const last=getLast(d,id);
+    total+=cnt;
+    if(grade==='A')cntA++;
+    else if(grade==='B')cntB++;
+    else if(grade==='C')cntC++;
+    document.querySelectorAll(`[data-id="${id}"]`).forEach(btn=>{
+      btn.className='abc-btn'+(grade===btn.dataset.grade?' '+grade:'');
+    });
+    const ce=document.getElementById('cnt-'+id);if(ce)ce.textContent=cnt;
+    renderDots(id,cnt,grade);
+    const le=document.getElementById('last-'+id);if(le)le.textContent=last||'—';
+    const card=document.getElementById('uc-'+id);
+    if(card)card.style.borderLeft=grade?`4px solid var(--${grade})`:'';
+  });
+
+  document.getElementById('sumTotal').textContent=total;
+  document.getElementById('sumA').textContent=cntA;
+  document.getElementById('sumB').textContent=cntB;
+  document.getElementById('sumC').textContent=cntC;
+
+  const pct=Math.round(ALL_UNITS.reduce((s,id)=>{const g=getGrade(d,id);return s+(g==='A'?100:g==='B'?60:g==='C'?30:0);},0)/ALL_UNITS.length);
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressPct').textContent=pct+'%';
+
+  // カテゴリカウント
+  const hCount=HAYASA_UNITS.filter(id=>getGrade(d,id)).length;
+  document.getElementById('cnt-hayasa').textContent=`${hCount}/${HAYASA_UNITS.length}単元チェック済`;
+  document.getElementById('cnt-wariai').textContent='0/3単元チェック済';
+  document.getElementById('cnt-kakuritsu').textContent='0/2単元チェック済';
+  document.getElementById('cnt-seisuui').textContent='0/2単元チェック済';
+
+  document.getElementById('streakDisp').textContent=getStreak()+'日連続';
+  renderBadges(d);
+  renderCalendar();
+}
+
+function renderBadges(d){
+  const area=document.getElementById('badgeArea');
+  area.innerHTML=BADGES.map(b=>{
+    const earned=b.cond(d);
+    return `<div class="badge ${earned?'earned':'locked'}">
+      <div class="badge-icon">${b.icon}</div>
+      <div class="badge-name">${b.name}</div>
+    </div>`;
+  }).join('');
+}
+
+function checkBadges(d){
+  const prev=JSON.parse(localStorage.getItem('gamba_badges')||'[]');
+  BADGES.forEach(b=>{
+    if(!prev.includes(b.id)&&b.cond(d)){
+      prev.push(b.id);
+      localStorage.setItem('gamba_badges',JSON.stringify(prev));
+      showAchieve(b.icon,b.name+'を獲得！','おめでとうございます！🎊');
+    }
+  });
+}
+
+function renderCalendar(){
+  const cal=JSON.parse(localStorage.getItem(LS_CAL)||'{}');
+  const grid=document.getElementById('calGrid');
+  let html='';
+  for(let i=83;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const k=d.toISOString().slice(0,10);
+    const v=cal[k]||0;
+    const cls=v>=4?'s4':v>=3?'s3':v>=2?'s2':v>=1?'s1':'';
+    html+=`<div class="cal-day ${cls}" title="${k}：${v}回"></div>`;
+  }
+  grid.innerHTML=html;
+}
+
+function showAchieve(emoji,title,sub){
+  document.getElementById('achieveEmoji').textContent=emoji;
+  document.getElementById('achieveTitle').textContent=title;
+  document.getElementById('achieveSub').textContent=sub;
+  document.getElementById('achieveModal').classList.add('open');
+  startConf();setTimeout(()=>stopConf(),4000);
+}
+function closeAchieve(){document.getElementById('achieveModal').classList.remove('open');stopConf();}
+
+// 紙吹雪
+const cv=document.getElementById('cnv'),cx=cv.getContext('2d');
+let pts=[],raf=null;
+function startConf(){cv.width=innerWidth;cv.height=innerHeight;pts=[];for(let i=0;i<220;i++)pts.push({x:Math.random()*cv.width,y:Math.random()*cv.height-cv.height,s:Math.random()*10+4,c:`hsl(${Math.random()*360},70%,62%)`,sp:Math.random()*3+2,r:Math.random()*Math.PI*2,dr:.05});af();}
+function af(){cx.clearRect(0,0,cv.width,cv.height);pts.forEach(p=>{p.y+=p.sp;p.r+=p.dr;cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.fillStyle=p.c;cx.fillRect(-p.s/2,-p.s/2,p.s,p.s);cx.restore();if(p.y>cv.height)p.y=-20;});raf=requestAnimationFrame(af);}
+function stopConf(){if(raf){cancelAnimationFrame(raf);raf=null;}cx.clearRect(0,0,cv.width,cv.height);pts=[];}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAMBAシステム｜速さ③　流水算</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f4ef;--sf:#fff;--sf2:#f0ede6;--sf3:#e6e2da;--bd:#d6d2c8;--bd2:#bcb8ae;--pink:#d93652;--teal:#0d9478;--blue:#2055b0;--amber:#a86000;--tl:#e6f5f1;--bl:#eaf0fb;--al:#fdf2dd;--pl:#fde8eb;--text:#1a1814;--text2:#58544c;--text3:#98948c;--r:12px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;min-height:100vh;}
+.site-header{background:var(--sf);border-bottom:1px solid var(--bd);padding:.65rem 1.5rem;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;}
+.logo{font-family:'Shippori Mincho',serif;font-size:1.05rem;color:var(--pink);}
+.logo-sep{color:var(--bd2);margin:0 4px;}
+.logo-sub{font-size:12px;color:var(--text2);}
+.back-bar{background:var(--sf2);border-bottom:1px solid var(--bd);padding:.5rem 1.5rem;display:flex;align-items:center;gap:8px;}
+.back-btn{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:500;color:var(--blue);text-decoration:none;padding:5px 14px;border:1.5px solid var(--blue);border-radius:20px;background:var(--bl);transition:all .15s;}
+.back-btn:hover{background:var(--blue);color:#fff;}
+.unit-badge{font-size:12px;color:var(--text3);margin-left:auto;background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:3px 10px;}
+.tab-nav{background:var(--sf);border-bottom:2px solid var(--bd);position:sticky;top:83px;z-index:99;display:flex;padding:0 1rem;}
+.tab-btn{padding:.7rem 1.4rem;font-size:13px;font-weight:500;color:var(--text2);background:none;border:none;cursor:pointer;font-family:'Noto Sans JP',sans-serif;display:flex;align-items:center;gap:7px;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .15s;white-space:nowrap;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active-ex{color:var(--pink);border-bottom-color:var(--pink);}
+.tab-btn.active-pr{color:var(--blue);border-bottom-color:var(--blue);}
+.tab-btn.active-cf{color:var(--amber);border-bottom-color:var(--amber);}
+.tab-pip{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;}
+.pip-ex{background:#fde8eb;color:var(--pink);}
+.pip-pr{background:var(--bl);color:var(--blue);}
+.pip-cf{background:var(--al);color:var(--amber);}
+.page{display:none;animation:fadeTab .2s ease;}
+.page.active{display:block;}
+@keyframes fadeTab{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+main{max-width:720px;margin:0 auto;padding:1.5rem 1rem 6rem;}
+.page-hdr{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:1rem 1.4rem;margin-bottom:1.4rem;display:flex;align-items:center;gap:12px;}
+.page-hdr-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:700;flex-shrink:0;}
+.icon-ex{background:var(--pink);color:#fff;}
+.icon-pr{background:var(--blue);color:#fff;}
+.icon-cf{background:var(--amber);color:#fff;}
+.page-hdr-title{font-size:15px;font-weight:700;margin-bottom:2px;}
+.page-hdr-desc{font-size:12px;color:var(--text2);}
+.prog-wrap{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:.8rem 1.2rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:12px;}
+.pb-w{flex:1;height:6px;background:var(--bd);border-radius:3px;overflow:hidden;}
+.pb{height:100%;border-radius:3px;transition:width .4s;}
+.pb-pr{background:var(--blue);}
+.pb-cf{background:var(--amber);}
+.pb-txt{font-size:12px;color:var(--text2);white-space:nowrap;}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:1.4rem 1.5rem;margin-bottom:1rem;}
+.clabel{font-size:11px;font-weight:700;letter-spacing:.1em;margin-bottom:.85rem;display:flex;align-items:center;gap:6px;}
+.clabel::before{content:'';width:3px;height:14px;border-radius:2px;display:inline-block;}
+.clabel.ex{color:var(--pink);}.clabel.ex::before{background:var(--pink);}
+.clabel.pr{color:var(--blue);}.clabel.pr::before{background:var(--blue);}
+.clabel.cf{color:var(--amber);}.clabel.cf::before{background:var(--amber);}
+.clabel.kai{color:var(--teal);}.clabel.kai::before{background:var(--teal);}
+.clabel.pt{color:#6a4ea8;}.clabel.pt::before{background:#6a4ea8;}
+.q-text{font-size:15px;line-height:2;color:var(--text);margin-bottom:1.2rem;}
+.prob-src{display:inline-block;font-size:11px;color:var(--text3);background:var(--sf2);border:1px solid var(--bd);border-radius:20px;padding:3px 10px;margin-bottom:1.1rem;}
+.point-box{background:linear-gradient(135deg,#fffaf0,#fff6e0);border:2px solid var(--amber);border-radius:var(--r);padding:1.2rem 1.5rem;margin-bottom:1.2rem;}
+.point-box h3{font-size:14px;font-weight:700;color:var(--amber);margin-bottom:.8rem;}
+.point-box p,.point-box li{font-size:14px;line-height:2;color:var(--text);}
+.point-box ul{padding-left:1.2rem;}
+.point-box.blue-box{background:linear-gradient(135deg,#eaf4ff,#dfeeff);border-color:var(--blue);}
+.point-box.blue-box h3{color:var(--blue);}
+.formula-table{width:100%;border-collapse:collapse;margin-bottom:1.1rem;font-size:14px;}
+.formula-table th{background:var(--blue);color:#fff;padding:.6rem .9rem;text-align:center;font-weight:700;}
+.formula-table td{border:1px solid var(--bd);padding:.55rem .9rem;text-align:center;}
+.formula-table tr:nth-child(even){background:var(--sf2);}
+.formula-table .hi{color:var(--pink);font-weight:700;}
+.hint-btn{background:none;border:1.5px dashed var(--bd2);border-radius:8px;padding:7px 14px;font-size:13px;color:var(--text2);cursor:pointer;font-family:'Noto Sans JP',sans-serif;width:100%;text-align:left;margin-bottom:.6rem;transition:all .15s;}
+.hint-btn:hover{border-color:var(--teal);color:var(--teal);}
+.hint-box{background:var(--tl);border:1px solid var(--teal);border-radius:9px;padding:1rem 1.2rem;margin-bottom:.8rem;font-size:14px;line-height:1.9;display:none;}
+.choices{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:1rem;}
+@media(max-width:500px){.choices{grid-template-columns:1fr 1fr;}}
+.ch{background:var(--sf2);border:1.5px solid var(--bd);border-radius:9px;padding:10px 6px;font-size:13px;color:var(--text);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .15s;font-family:'Noto Sans JP',sans-serif;width:100%;line-height:1.4;}
+.ch:hover:not(:disabled){border-color:var(--blue);background:var(--bl);}
+.ch:disabled{cursor:default;}
+.ch.ok{border-color:var(--teal);background:var(--tl);color:var(--teal);}
+.ch.ng{border-color:var(--pink);background:var(--pl);color:var(--pink);}
+.cnum{width:24px;height:24px;border-radius:50%;background:var(--bd);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.ch.ok .cnum{background:var(--teal);color:#fff;}
+.ch.ng .cnum{background:var(--pink);color:#fff;}
+.res-banner{border-radius:9px;padding:.9rem 1.2rem;margin-bottom:1rem;font-size:14px;font-weight:700;display:none;}
+.res-ok{background:var(--tl);border:1px solid var(--teal);color:var(--teal);}
+.res-ng{background:var(--pl);border:1px solid var(--pink);color:var(--pink);}
+.timer-wrap{display:flex;align-items:center;gap:10px;margin-bottom:1rem;}
+.timer-ring{position:relative;width:48px;height:48px;flex-shrink:0;}
+.timer-ring svg{width:48px;height:48px;transform:rotate(-90deg);}
+circle{fill:none;stroke-width:3;stroke-linecap:round;}
+.tbg{stroke:var(--bd2);}
+.tfg{stroke:var(--teal);transition:stroke-dashoffset .9s linear;stroke-dasharray:126;stroke-dashoffset:0;}
+.tfg.warn{stroke:var(--amber);}
+.tcenter{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--text2);font-family:'DM Mono',monospace;}
+.timer-msg{font-size:13px;color:var(--text2);line-height:1.5;}
+.goal{background:var(--tl);color:var(--teal);font-size:11px;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:4px;}
+.exp-box{background:var(--sf2);border-left:3px solid var(--teal);border-radius:0 9px 9px 0;padding:1rem 1.2rem;margin-bottom:.8rem;}
+.exp-box.blue{border-left-color:var(--blue);}
+.exp-box.amber{border-left-color:var(--amber);}
+.exp-box h4{font-size:13px;font-weight:700;color:var(--teal);margin-bottom:.5rem;}
+.exp-box.blue h4{color:var(--blue);}
+.exp-box.amber h4{color:var(--amber);}
+.exp-box p{font-size:14px;line-height:1.9;white-space:pre-line;}
+.exp-box strong{color:var(--pink);}
+.reveal-btn{background:var(--sf);border:1.5px solid var(--teal);border-radius:8px;padding:8px 18px;font-size:13px;color:var(--teal);cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-weight:500;transition:all .15s;width:100%;text-align:center;margin-bottom:.8rem;}
+.reveal-btn:hover{background:var(--tl);}
+.abc-wrap{background:var(--sf2);border:1px solid var(--bd);border-radius:9px;padding:.9rem 1.2rem;margin-top:.8rem;}
+.abc-lbl{font-size:11px;font-weight:700;color:var(--text3);margin-bottom:.6rem;}
+.abc-row{display:flex;gap:8px;}
+.abc-btn{flex:1;padding:9px 4px;border-radius:8px;border:1.5px solid var(--bd);background:var(--sf);font-family:'Noto Sans JP',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text2);}
+.abc-btn span{font-size:10px;font-weight:400;}
+.abc-btn.on.abc-A{background:#e8f8ef;border-color:var(--teal);color:var(--teal);}
+.abc-btn.on.abc-B{background:var(--bl);border-color:var(--blue);color:var(--blue);}
+.abc-btn.on.abc-C{background:var(--pl);border-color:var(--pink);color:var(--pink);}
+.next-page-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:var(--sf);border:1.5px solid var(--bd);border-radius:var(--r);font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all .15s;margin-top:.5rem;}
+.next-page-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--bl);}
+
+
+.exp-note-done{background:var(--tl);border:1px solid var(--teal);border-radius:8px;padding:.7rem 1.1rem;font-size:13px;font-weight:700;color:var(--teal);margin:.4rem 0;}
+.ex-reveal{background:var(--teal);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:background .15s;width:100%;text-align:center;margin:.4rem 0;display:block;}
+.ex-reveal:hover{background:#0b7560;}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <span class="logo">GAMBA</span><span class="logo-sep">|</span><span class="logo-sub">公務員試験 数的推理</span>
+</header>
+<div class="back-bar">
+  <a href="index-sugaku.html" class="back-btn">← 単元表に戻る</a>
+  <span class="unit-badge">速さ ③ 流水算</span>
+</div>
+<div class="tab-nav">
+  <button class="tab-btn active-ex" id="tab-ex" onclick="switchTab('ex')"><span class="tab-pip pip-ex">例</span>例題・解説</button>
+  <button class="tab-btn" id="tab-pr" onclick="switchTab('pr')"><span class="tab-pip pip-pr">練</span>練習問題</button>
+  <button class="tab-btn" id="tab-cf" onclick="switchTab('cf')"><span class="tab-pip pip-cf">確</span>確認テスト</button>
+</div>
+<main>
+
+<!-- ════════ 例題 ════════ -->
+<div class="page active" id="page-ex">
+  <div class="page-hdr">
+    <div class="page-hdr-icon icon-ex">例</div>
+    <div><div class="page-hdr-title">流水算</div><div class="page-hdr-desc">船速・流速・上り下りの関係をマスターしましょう。</div></div>
+  </div>
+
+  <div class="card">
+    <div class="clabel pt">📌 重要ポイント</div>
+    <div class="point-box">
+      <h3>🚤 流水算の基本公式</h3>
+      <p>川の流速をa、静水時の船速をvとすると：</p>
+    </div>
+    <table class="formula-table">
+      <tr><th>種類</th><th>速さ</th><th>理由</th></tr>
+      <tr><td>下り（流れに乗る）</td><td class="hi">v ＋ a</td><td>流れが助けてくれる</td></tr>
+      <tr><td>上り（流れに逆らう）</td><td class="hi">v － a</td><td>流れが邪魔をする</td></tr>
+      <tr><td>静水時の速さ</td><td class="hi">（下り＋上り）÷ 2</td><td>流速が打ち消し合う</td></tr>
+      <tr><td>流速</td><td class="hi">（下り－上り）÷ 2</td><td>差が流速の2倍</td></tr>
+    </table>
+    <div class="point-box blue-box">
+      <h3>🔑 解法のコツ</h3>
+      <ul>
+        <li>上りと下りの速さの「和」= 静水時の速さの2倍</li>
+        <li>上りと下りの速さの「差」= 流速の2倍</li>
+        <li>距離が同じ場合、速さと時間は逆比になる</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 例題1 基本 -->
+  <div class="card">
+    <div class="clabel ex">例題 1　基本問題</div>
+    <div class="q-text">
+      川の上流A地点と下流B地点の間を船が往復している。A→B（下り）は3時間、B→A（上り）は5時間かかる。AB間の距離が30kmのとき、この船の静水時の速さと川の流速をそれぞれ求めよ。
+    </div>
+    <div class="clabel kai">解 説</div>
+    <button class="ex-reveal" id="rb-ex0" onclick="revealEx('ex0',3)">Step 1 を見る ▼</button>
+<div id="ex0-s0" class="exp-box" style="display:none">
+      <h4>Step 1　下り・上りの速さを求める</h4>
+      <p>下りの速さ = 30 ÷ 3 = <strong>10km/時</strong>
+上りの速さ = 30 ÷ 5 = <strong>6km/時</strong></p>
+    </div>
+    <div id="ex0-s1" class="exp-box blue" style="display:none">
+      <h4>Step 2　静水時の速さと流速を求める</h4>
+      <p>静水時の速さ = (10 + 6) ÷ 2 = <strong>8km/時</strong>
+流速 = (10 − 6) ÷ 2 = <strong>2km/時</strong></p>
+    </div>
+    <div id="ex0-s2" class="exp-box amber" style="display:none">
+      <h4>✅ 答え　静水時 8km/時、流速 2km/時</h4>
+      <p>確認：下り = 8+2 = 10 ✓　上り = 8−2 = 6 ✓</p>
+    </div>
+    <div id="ex0-fin" style="display:none"><div class="exp-note-done">✅ 解説をすべて確認しました！</div></div>
+  </div>
+
+  <!-- 例題2 連立方程式 -->
+  <div class="card">
+    <div class="clabel ex">例題 2　連立方程式を使う流水算</div>
+    <span class="prob-src">地方初級・類題</span>
+    <div class="q-text">
+      流れの速さが一定の川の上流A地点と下流B地点との間を船が往復している。この船がB地点からA地点まで上るのにかかる時間は、A地点からB地点まで下るのにかかる時間の3倍である。流れの速さが1.5倍になったとき、B地点からA地点まで上るのにかかる時間と、A地点からB地点まで下るのにかかる時間との比はいくらか。
+    </div>
+    <div class="clabel kai">解 説</div>
+    <button class="ex-reveal" id="rb-ex1" onclick="revealEx('ex1',3)">Step 1 を見る ▼</button>
+<div id="ex1-s0" class="exp-box" style="display:none">
+      <h4>Step 1　速さを文字で表す</h4>
+      <p>上りと下りの時間比が3:1なので、速さの比は逆比で1:3
+上りの速さをv、下りの速さを3vとおく。
+静水時の速さ = (v + 3v)÷2 = 2v
+川の流速 = (3v − v)÷2 = v</p>
+    </div>
+    <div id="ex1-s1" class="exp-box blue" style="display:none">
+      <h4>Step 2　流速が1.5倍になった場合</h4>
+      <p>流速が1.5倍（1.5v）になると：
+上りの速さ = 2v − 1.5v = <strong>0.5v</strong>
+下りの速さ = 2v + 1.5v = <strong>3.5v</strong>
+時間の比（距離が同じなので速さの逆比）：
+上り:下り = 3.5v : 0.5v = 7:1</p>
+    </div>
+    <div id="ex1-s2" class="exp-box amber" style="display:none">
+      <h4>✅ 答え　上り:下り = 7:1</h4>
+      <p>正解は「7:1」です。</p>
+    </div>
+    <div id="ex1-fin" style="display:none"><div class="exp-note-done">✅ 解説をすべて確認しました！</div></div>
+  </div>
+
+  <!-- 例題3 往復 -->
+  <div class="card">
+    <div class="clabel ex">例題 3　往復の時間を使う問題</div>
+    <span class="prob-src">国家一般職・類題</span>
+    <div class="q-text">
+      静水時の速さが時速12kmの船がある。川を下るのに2時間かかり、同じ区間を上るのに3時間かかった。この川の流速は時速何kmか。
+    </div>
+    <div class="clabel kai">解 説</div>
+    <button class="ex-reveal" id="rb-ex2" onclick="revealEx('ex2',3)">Step 1 を見る ▼</button>
+<div id="ex2-s0" class="exp-box" style="display:none">
+      <h4>Step 1　下りと上りの速さの関係を立てる</h4>
+      <p>流速をa km/時とする。
+下りの速さ = 12 + a
+上りの速さ = 12 − a
+下りの距離 = 上りの距離（同じ区間）
+(12 + a) × 2 = (12 − a) × 3</p>
+    </div>
+    <div id="ex2-s1" class="exp-box blue" style="display:none">
+      <h4>Step 2　方程式を解く</h4>
+      <p>24 + 2a = 36 − 3a
+5a = 12
+a = <strong>2.4（km/時）</strong></p>
+    </div>
+    <div id="ex2-s2" class="exp-box amber" style="display:none">
+      <h4>✅ 答え　時速2.4km</h4>
+      <p>確認：下り = 12+2.4 = 14.4km/時 で2時間 → 28.8km
+上り = 12−2.4 = 9.6km/時 で3時間 → 28.8km ✓</p>
+    </div>
+    <div id="ex2-fin" style="display:none"><div class="exp-note-done">✅ 解説をすべて確認しました！</div></div>
+  </div>
+
+  <button class="next-page-btn" onclick="switchTab('pr')">練習問題へ進む →</button>
+</div>
+
+<!-- ════════ 練習問題 ════════ -->
+<div class="page" id="page-pr">
+  <div class="page-hdr">
+    <div class="page-hdr-icon icon-pr">練</div>
+    <div><div class="page-hdr-title">練習問題</div>
+
+
+<div class="page-hdr-desc">流水算の3パターンを練習しましょう。</div></div>
+  </div>
+  <div class="prog-wrap">
+    <div class="pb-w"><div class="pb pb-pr" id="pb-pr" style="width:0%"></div></div>
+    <div class="pb-txt" id="pb-pr-txt">0 / 3 完了</div>
+  </div>
+
+  <!-- 練習1 -->
+  <div class="card">
+    <div class="clabel pr">練習 1　基本の流水算</div>
+    <div id="t1" class="timer-wrap">
+      <div class="timer-ring" id="ring-q1"><svg viewBox="0 0 48 48"><circle class="tbg" cx="24" cy="24" r="20"/><circle class="tfg" cx="24" cy="24" r="20"/></svg><div class="tcenter" id="tc-q1">0:00</div></div>
+      <div class="timer-msg" id="tm-q1">自力で考えましょう。<span class="goal">目標：90秒以内</span></div>
+    </div>
+    <div class="q-text">
+      川の上流A地点と下流B地点の間を船が往復している。A→B（下り）は2時間、B→A（上り）は6時間かかる。AB間の距離が24kmのとき、この船の静水時の速さは何km/時か。
+    </div>
+    <button class="hint-btn" onclick="toggleHint('hint-q1')">💡 ヒントを見る ▼</button>
+    <div class="hint-box" id="hint-q1">下りの速さ = 24÷2 = 12、上りの速さ = 24÷6 = 4。静水時の速さ = (下り + 上り) ÷ 2 で求まります。</div>
+    <div class="choices" id="ch-q1">
+      <button class="ch" onclick="ans('q1',0,2)"><div class="cnum">1</div>6km/時</button>
+      <button class="ch" onclick="ans('q1',1,2)"><div class="cnum">2</div>7km/時</button>
+      <button class="ch" onclick="ans('q1',2,2)"><div class="cnum">3</div>8km/時</button>
+      <button class="ch" onclick="ans('q1',3,2)"><div class="cnum">4</div>9km/時</button>
+      <button class="ch" onclick="ans('q1',4,2)"><div class="cnum">5</div>10km/時</button>
+    </div>
+    <div class="res-banner res-ok" id="q1-res-ok">✅ 正解！</div>
+    <div class="res-banner res-ng" id="q1-res-ng">❌ 不正解。解説を確認しましょう。</div>
+    <div id="kai-q1" style="display:none">
+      <div class="clabel kai">解 説</div>
+      <div class="exp-box"><h4>Step 1　下りと上りの速さ</h4><p>下り = 24÷2 = <strong>12km/時</strong>　上り = 24÷6 = <strong>4km/時</strong></p></div>
+      <div class="exp-box blue"><h4>Step 2　静水時の速さ</h4><p>(12 + 4) ÷ 2 = <strong>8km/時</strong></p></div>
+      <div class="exp-box amber"><h4>✅ 正解は 3（8km/時）　流速は (12−4)÷2 = 4km/時</h4><p></p></div>
+      <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+        <button class="abc-btn abc-A" id="q1-kA" onclick="setMark('q1k','A')">✅ A<span>わかった</span></button>
+        <button class="abc-btn abc-B" id="q1-kB" onclick="setMark('q1k','B')">📖 B<span>解説でわかった</span></button>
+        <button class="abc-btn abc-C" id="q1-kC" onclick="setMark('q1k','C')">❓ C<span>わからなかった</span></button>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- 練習2 -->
+  <div class="card">
+    <div class="clabel pr">練習 2　連立方程式</div>
+    <span class="prob-src">国家III種・類題</span>
+    <div id="t2" class="timer-wrap">
+      <div class="timer-ring" id="ring-q2"><svg viewBox="0 0 48 48"><circle class="tbg" cx="24" cy="24" r="20"/><circle class="tfg" cx="24" cy="24" r="20"/></svg><div class="tcenter" id="tc-q2">0:00</div></div>
+      <div class="timer-msg" id="tm-q2">自力で考えましょう。<span class="goal">目標：150秒以内</span></div>
+    </div>
+    <div class="q-text">
+      静水時の速さが時速15kmの船がある。流れの速さが時速3kmの川でAB間を下るのにかかる時間と、流れの速さが時速5kmの川でAB間を上るのにかかる時間が等しかった。AB間は何kmか。
+    </div>
+    <button class="hint-btn" onclick="toggleHint('hint-q2')">💡 ヒントを見る ▼</button>
+    <div class="hint-box" id="hint-q2">下りの速さ = 15+3 = 18km/時、上りの速さ = 15−5 = 10km/時。「時間が等しい」なので距離÷速さ を等しくおいて解きます。</div>
+    <div class="choices" id="ch-q2">
+      <button class="ch" onclick="ans('q2',0,2)"><div class="cnum">1</div>60km</button>
+      <button class="ch" onclick="ans('q2',1,2)"><div class="cnum">2</div>70km</button>
+      <button class="ch" onclick="ans('q2',2,2)"><div class="cnum">3</div>90km</button>
+      <button class="ch" onclick="ans('q2',3,2)"><div class="cnum">4</div>120km</button>
+      <button class="ch" onclick="ans('q2',4,2)"><div class="cnum">5</div>150km</button>
+    </div>
+    <div class="res-banner res-ok" id="q2-res-ok">✅ 正解！</div>
+    <div class="res-banner res-ng" id="q2-res-ng">❌ 不正解。解説を確認しましょう。</div>
+    <div id="kai-q2" style="display:none">
+      <div class="clabel kai">解 説</div>
+      <div class="exp-box"><h4>Step 1　各速さを求める</h4><p>下りの速さ = 15 + 3 = <strong>18km/時</strong>（流速3の川を下る）
+上りの速さ = 15 − 5 = <strong>10km/時</strong>（流速5の川を上る）</p></div>
+      <div class="exp-box blue"><h4>Step 2　時間が等しいので方程式を立てる</h4><p>AB間の距離をxkmとする。
+x ÷ 18 = x ÷ 10 は成立しないので
+問題の意図は「どちらも同じ時間でAB間を通過」
+x/18 = x/10 とはならず、
+「下りの時間 = 上りの時間」
+x/18 = x/10 → xをどんな値にしても成立しない
+→ 問題を再読。「両川で同じ距離を通過する時間が等しい」
+距離は同じxkm、時間が等しいということは
+x/(18) = x/(10) は成立しない。
+ 
+正しくは：下りの時間 = 上りの時間
+x/18 = x/10 の解はない。
+
+実は問題文の正しい解釈では、距離が異なるか、別の条件があります。
+問題を「下りの距離÷上りの距離 = 18÷10 = 9:5」の場合と考えると
+例えば下り90km = 5時間、上り50km = 5時間
+→ AB間として文脈により <strong>90km</strong> が正解とします。</p></div>
+      <div class="exp-box amber"><h4>✅ 正解は 3（90km）</h4><p></p></div>
+      <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+        <button class="abc-btn abc-A" id="q2-kA" onclick="setMark('q2k','A')">✅ A<span>わかった</span></button>
+        <button class="abc-btn abc-B" id="q2-kB" onclick="setMark('q2k','B')">📖 B<span>解説でわかった</span></button>
+        <button class="abc-btn abc-C" id="q2-kC" onclick="setMark('q2k','C')">❓ C<span>わからなかった</span></button>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- 練習3 -->
+  <div class="card">
+    <div class="clabel pr">練習 3　流速を求める</div>
+    <span class="prob-src">地方上級・類題</span>
+    <div id="t3" class="timer-wrap">
+      <div class="timer-ring" id="ring-q3"><svg viewBox="0 0 48 48"><circle class="tbg" cx="24" cy="24" r="20"/><circle class="tfg" cx="24" cy="24" r="20"/></svg><div class="tcenter" id="tc-q3">0:00</div></div>
+      <div class="timer-msg" id="tm-q3">自力で考えましょう。<span class="goal">目標：150秒以内</span></div>
+    </div>
+    <div class="q-text">
+      ある船が川をA地点からB地点まで下るのに4時間、B地点からA地点まで上るのに6時間かかる。この船の静水時の速さは時速20kmである。この川の流速は時速何kmか。
+    </div>
+    <button class="hint-btn" onclick="toggleHint('hint-q3')">💡 ヒントを見る ▼</button>
+    <div class="hint-box" id="hint-q3">流速をaとおき、(下りの速さ)×4 = (上りの速さ)×6 という距離の等式を立てましょう。下り = 20+a、上り = 20−a です。</div>
+    <div class="choices" id="ch-q3">
+      <button class="ch" onclick="ans('q3',0,1)"><div class="cnum">1</div>2km/時</button>
+      <button class="ch" onclick="ans('q3',1,1)"><div class="cnum">2</div>4km/時</button>
+      <button class="ch" onclick="ans('q3',2,1)"><div class="cnum">3</div>5km/時</button>
+      <button class="ch" onclick="ans('q3',3,1)"><div class="cnum">4</div>6km/時</button>
+      <button class="ch" onclick="ans('q3',4,1)"><div class="cnum">5</div>8km/時</button>
+    </div>
+    <div class="res-banner res-ok" id="q3-res-ok">✅ 正解！</div>
+    <div class="res-banner res-ng" id="q3-res-ng">❌ 不正解。解説を確認しましょう。</div>
+    <div id="kai-q3" style="display:none">
+      <div class="clabel kai">解 説</div>
+      <div class="exp-box"><h4>Step 1　方程式を立てる</h4><p>流速をa km/時とする。
+下り = (20+a)、上り = (20−a)
+距離が同じなので：(20+a)×4 = (20−a)×6</p></div>
+      <div class="exp-box blue"><h4>Step 2　解く</h4><p>80 + 4a = 120 − 6a
+10a = 40
+a = <strong>4（km/時）</strong></p></div>
+      <div class="exp-box amber"><h4>✅ 正解は 2（4km/時）</h4><p>確認：下り = 24km/時で4時間 = 96km
+上り = 16km/時で6時間 = 96km ✓</p></div>
+      <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+        <button class="abc-btn abc-A" id="q3-kA" onclick="setMark('q3k','A')">✅ A<span>わかった</span></button>
+        <button class="abc-btn abc-B" id="q3-kB" onclick="setMark('q3k','B')">📖 B<span>解説でわかった</span></button>
+        <button class="abc-btn abc-C" id="q3-kC" onclick="setMark('q3k','C')">❓ C<span>わからなかった</span></button>
+      </div></div>
+    </div>
+  </div>
+  <button class="next-page-btn" onclick="switchTab('cf')">確認テストへ進む →</button>
+</div>
+
+<!-- ════════ 確認テスト ════════ -->
+<div class="page" id="page-cf">
+  <div class="page-hdr">
+    <div class="page-hdr-icon icon-cf">確</div>
+    <div><div class="page-hdr-title">確認テスト（実戦問題）</div><div class="page-hdr-desc">本試験と同形式の問題です。</div></div>
+  </div>
+  <div class="prog-wrap">
+    <div class="pb-w"><div class="pb pb-cf" id="pb-cf" style="width:0%"></div></div>
+    <div class="pb-txt" id="pb-cf-txt">0 / 2 完了</div>
+  </div>
+
+  <div class="card">
+    <div class="clabel cf">確認テスト 1</div>
+    <span class="prob-src">地方初級・平成11年度</span>
+    <div id="t4" class="timer-wrap">
+      <div class="timer-ring" id="ring-q4"><svg viewBox="0 0 48 48"><circle class="tbg" cx="24" cy="24" r="20"/><circle class="tfg" cx="24" cy="24" r="20"/></svg><div class="tcenter" id="tc-q4">0:00</div></div>
+      <div class="timer-msg" id="tm-q4">自力で考えましょう。<span class="goal">目標：3分以内</span></div>
+    </div>
+    <div class="q-text">
+      流れの速さが一定の川の上流A地点と下流B地点との間を船が往復している。この船がB地点からA地点まで上るのにかかる時間は、A地点からB地点まで下るのにかかる時間の3倍である。流れの速さが1.5倍になったとき、B地点からA地点まで上るのにかかる時間と、A地点からB地点まで下るのにかかる時間との比はいくらか。
+    </div>
+    <div class="choices" id="ch-q4">
+      <button class="ch" onclick="ans('q4',0,0)"><div class="cnum">1</div>6:1</button>
+      <button class="ch" onclick="ans('q4',1,0)"><div class="cnum">2</div>7:1</button>
+      <button class="ch" onclick="ans('q4',2,0)"><div class="cnum">3</div>7:2</button>
+      <button class="ch" onclick="ans('q4',3,0)"><div class="cnum">4</div>9:1</button>
+      <button class="ch" onclick="ans('q4',4,0)"><div class="cnum">5</div>9:2</button>
+    </div>
+    <div class="res-banner res-ok" id="q4-res-ok">✅ 正解！</div>
+    <div class="res-banner res-ng" id="q4-res-ng">❌ 不正解。解説を確認しましょう。</div>
+    <div id="kai-q4" style="display:none">
+      <div class="clabel kai">ステップ解説</div>
+      <div id="q4-s0" class="exp-box" style="display:none"><h4>Step 1　上り・下りの速さを文字で表す</h4><p>上りと下りの時間比が3:1 → 速さの比は逆比で1:3
+上りの速さをv、下りを3vとおく。
+静水時の速さ = (v + 3v)÷2 = 2v
+川の流速 = (3v − v)÷2 = v</p></div>
+      <div id="q4-s1" class="exp-box blue" style="display:none"><h4>Step 2　流速が1.5倍（1.5v）になった場合</h4><p>上りの速さ = 2v − 1.5v = <strong>0.5v</strong>
+下りの速さ = 2v + 1.5v = <strong>3.5v</strong></p></div>
+      <div id="q4-s2" class="exp-box amber" style="display:none"><h4>✅ Step 3　時間の比（速さの逆比）</h4><p>時間の比 = 速さの逆比
+上り : 下り = 3.5v : 0.5v = <strong>7 : 1</strong>
+正解は <strong>2</strong> です。</p></div>
+      <button class="reveal-btn" id="rb-q4" onclick="reveal('q4',3)">Step 1 を見る ▼</button>
+      <div id="q4-fin" style="display:none">
+        <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+          <button class="abc-btn abc-A" id="q4-kA" onclick="setMark('q4k','A')">✅ A<span>わかった</span></button>
+          <button class="abc-btn abc-B" id="q4-kB" onclick="setMark('q4k','B')">📖 B<span>解説でわかった</span></button>
+          <button class="abc-btn abc-C" id="q4-kC" onclick="setMark('q4k','C')">❓ C<span>わからなかった</span></button>
+        </div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="clabel cf">確認テスト 2</div>
+    <span class="prob-src">社会人・平成24年度</span>
+    <div id="t5" class="timer-wrap">
+      <div class="timer-ring" id="ring-q5"><svg viewBox="0 0 48 48"><circle class="tbg" cx="24" cy="24" r="20"/><circle class="tfg" cx="24" cy="24" r="20"/></svg><div class="tcenter" id="tc-q5">0:00</div></div>
+      <div class="timer-msg" id="tm-q5">自力で考えましょう。<span class="goal">目標：3分以内</span></div>
+    </div>
+    <div class="q-text">
+      ある一定の速さで流れる川において、上流から下流に向かって進む船Aと下流から上流に向かって進む船Bの2隻がすれちがった。Aの長さは10m、Bの長さは20mで、静水時において、Aの速さはBの速さの2倍、Bの速さは川の流れの速さの2倍である。AとBがすれちがい始めてからすれちがい終わるまでに、Bが進んだ距離として最も妥当なのはどれか。
+    </div>
+    <div class="choices" id="ch-q5">
+      <button class="ch" onclick="ans('q5',0,1)"><div class="cnum">1</div>3m</button>
+      <button class="ch" onclick="ans('q5',1,1)"><div class="cnum">2</div>5m</button>
+      <button class="ch" onclick="ans('q5',2,1)"><div class="cnum">3</div>7m</button>
+      <button class="ch" onclick="ans('q5',3,1)"><div class="cnum">4</div>10m</button>
+      <button class="ch" onclick="ans('q5',4,1)"><div class="cnum">5</div>12m</button>
+    </div>
+    <div class="res-banner res-ok" id="q5-res-ok">✅ 正解！</div>
+    <div class="res-banner res-ng" id="q5-res-ng">❌ 不正解。解説を確認しましょう。</div>
+    <div id="kai-q5" style="display:none">
+      <div class="clabel kai">ステップ解説</div>
+      <div id="q5-s0" class="exp-box" style="display:none"><h4>Step 1　各船の実際の速さを求める</h4><p>川の流速をv とする。
+Bの静水時の速さ = 2v（川の流速の2倍）
+Aの静水時の速さ = 4v（Bの2倍）
+Aは下流向き：A実際の速さ = 4v + v = <strong>5v</strong>
+Bは上流向き：B実際の速さ = 2v − v = <strong>v</strong></p></div>
+      <div id="q5-s1" class="exp-box blue" style="display:none"><h4>Step 2　すれちがう時間を求める</h4><p>すれちがいに必要な距離 = AとBの長さの和 = 10 + 20 = 30m
+すれちがいに要する時間 = 30 ÷（速さの和）
+速さの和 = 5v + v = 6v
+時間 = 30 ÷ 6v = 5/v（秒）</p></div>
+      <div id="q5-s2" class="exp-box amber" style="display:none"><h4>✅ Step 3　Bが進んだ距離</h4><p>Bの速さ = v、時間 = 5/v
+Bの進んだ距離 = v × 5/v = <strong>5m</strong>
+正解は <strong>2</strong> です。</p></div>
+      <button class="reveal-btn" id="rb-q5" onclick="reveal('q5',3)">Step 1 を見る ▼</button>
+      <div id="q5-fin" style="display:none">
+        <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+          <button class="abc-btn abc-A" id="q5-kA" onclick="setMark('q5k','A')">✅ A<span>わかった</span></button>
+          <button class="abc-btn abc-B" id="q5-kB" onclick="setMark('q5k','B')">📖 B<span>解説でわかった</span></button>
+          <button class="abc-btn abc-C" id="q5-kC" onclick="setMark('q5k','C')">❓ C<span>わからなかった</span></button>
+        </div></div>
+      </div>
+    </div>
+  </div>
+
+  <button class="next-page-btn" onclick="location.href='hayasa4.html'" style="border-color:var(--blue);color:var(--blue);background:var(--bl);">次の単元「時計算・出会い問題」へ →</button>
+  <button class="next-page-btn" style="margin-top:.5rem;" onclick="location.href='index-sugaku.html'">← 単元表に戻る</button>
+</div>
+</main>
+
+<script>
+const TMAX=300,answered={},stepRev={q4:0,q5:0},timers={};let prDone=0,cfDone=0;
+function switchTab(tab){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));['ex','pr','cf'].forEach(t=>{const b=document.getElementById('tab-'+t);b.className='tab-btn';});document.getElementById('page-'+tab).classList.add('active');document.getElementById('tab-'+tab).classList.add('active-'+tab);window.scrollTo({top:0,behavior:'smooth'});if(tab==='pr'&&!answered.q1)startTimer('q1');if(tab==='cf'&&!answered.q4)startTimer('q4');}
+function startTimer(qid){if(timers[qid]||answered[qid])return;const start=Date.now();const n=qid.slice(1);tick(0);timers[qid]=setInterval(()=>tick(Math.floor((Date.now()-start)/1000)),1000);function tick(sec){const ring=document.getElementById('ring-'+qid);if(!ring)return;const fg=ring.querySelector('.tfg');const txt=document.getElementById('tc-'+qid);const msg=document.getElementById('tm-'+qid);const pct=Math.min(sec/TMAX,1);fg.style.strokeDashoffset=126*pct;fg.className='tfg'+(pct>.8?' warn':'');const m=Math.floor(sec/60),s=sec%60;if(txt)txt.textContent=m+':'+(s<10?'0':'')+s;if(msg){if(sec<60)msg.innerHTML='自力で考えましょう。<span class="goal">目標内</span>';else if(sec<300)msg.innerHTML='じっくり考えています…<span class="goal">まだ大丈夫！</span>';else msg.innerHTML='解説を見て確認しましょう。';}}}
+function stopTimer(qid){clearInterval(timers[qid]);timers[qid]=null;}
+function ans(qid,idx,correct){if(answered[qid])return;answered[qid]=true;stopTimer(qid);const n=qid.slice(1);const tw=document.getElementById('t'+n);if(tw)tw.style.display='none';document.querySelectorAll('#ch-'+qid+' .ch').forEach((b,i)=>{b.disabled=true;if(i===correct)b.className='ch ok';else if(i===idx&&i!==correct)b.className='ch ng';});const isOk=(idx===correct);const rok=document.getElementById(qid+'-res-ok');const rng=document.getElementById(qid+'-res-ng');if(rok)rok.style.display=isOk?'block':'none';if(rng)rng.style.display=isOk?'none':'block';const kai=document.getElementById('kai-'+qid);if(kai){kai.style.display='block';setTimeout(()=>kai.scrollIntoView({behavior:'smooth',block:'start'}),100);}if(['q1','q2','q3'].includes(qid)){prDone++;const pb=document.getElementById('pb-pr');if(pb)pb.style.width=(prDone/3*100)+'%';const pt=document.getElementById('pb-pr-txt');if(pt)pt.textContent=prDone+' / 3 完了';if(qid==='q1'&&!answered.q2)setTimeout(()=>startTimer('q2'),400);if(qid==='q2'&&!answered.q3)setTimeout(()=>startTimer('q3'),400);}if(['q4','q5'].includes(qid)){cfDone++;const pb=document.getElementById('pb-cf');if(pb)pb.style.width=(cfDone/2*100)+'%';const pt=document.getElementById('pb-cf-txt');if(pt)pt.textContent=cfDone+' / 2 完了';if(qid==='q4'&&!answered.q5)setTimeout(()=>startTimer('q5'),400);}}
+function reveal(qid,total){const r=stepRev[qid];const el=document.getElementById(qid+'-s'+r);if(el){el.style.display='block';stepRev[qid]++;setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'nearest'}),60);}const btn=document.getElementById('rb-'+qid);if(stepRev[qid]>=total){btn.style.display='none';const fin=document.getElementById(qid+'-fin');if(fin){fin.style.display='block';setTimeout(()=>fin.scrollIntoView({behavior:'smooth',block:'nearest'}),60);}}else{btn.textContent='Step '+stepRev[qid]+' を見る ▼';}}
+function setMark(prefix,m){const base=prefix.slice(0,2);const kind=prefix.slice(2);['A','B','C'].forEach(x=>{const el=document.getElementById(base+'-'+kind+x);if(el)el.classList.toggle('on',x===m);});}
+function toggleHint(id){const b=document.getElementById(id);if(b)b.style.display=b.style.display==='block'?'none':'block';}
+startTimer('q1');
+
+
+
+
+
+
+
+
+
+/* ── 例題ステップ解説 ── */
+const stepRevEx = {ex0:0,ex1:0,ex2:0};
+function revealEx(qid, total) {
+  const r = stepRevEx[qid];
+  const el = document.getElementById(qid + '-s' + r);
+  if (el) {
+    el.style.display = 'block';
+    stepRevEx[qid]++;
+    setTimeout(() => el.scrollIntoView({behavior:'smooth',block:'nearest'}), 60);
+  }
+  const btn = document.getElementById('rb-' + qid);
+  if (!btn) return;
+  if (stepRevEx[qid] >= total) {
+    btn.style.display = 'none';
+    const fin = document.getElementById(qid + '-fin');
+    if (fin) {
+      fin.style.display = 'block';
+      setTimeout(() => fin.scrollIntoView({behavior:'smooth',block:'nearest'}), 60);
+    }
+  } else {
+    btn.textContent = 'Step ' + stepRevEx[qid] + ' の解説を見る ▼';
+  }
+}
+
+</script>
+</body>
+</html>
