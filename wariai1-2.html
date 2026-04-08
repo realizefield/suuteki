@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAMBAシステム｜割合①-2　食塩水の混合（連立方程式）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f4ef;--sf:#fff;--sf2:#f0ede6;--bd:#d6d2c8;--bd2:#bcb8ae;--pink:#d93652;--teal:#0d9478;--blue:#2055b0;--amber:#a86000;--tl:#e6f5f1;--bl:#eaf0fb;--al:#fdf2dd;--pl:#fde8eb;--text:#1a1814;--text2:#58544c;--text3:#98948c;--r:12px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;min-height:100vh;}
+.site-header{background:var(--sf);border-bottom:1px solid var(--bd);padding:.65rem 1.5rem;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;}
+.logo{font-family:'Shippori Mincho',serif;font-size:1.05rem;color:var(--pink);}
+.logo-sep{color:var(--bd2);margin:0 4px;}
+.logo-sub{font-size:12px;color:var(--text2);}
+.back-bar{background:var(--sf2);border-bottom:1px solid var(--bd);padding:.5rem 1.5rem;display:flex;align-items:center;gap:8px;}
+.back-btn{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:500;color:var(--blue);text-decoration:none;padding:5px 14px;border:1.5px solid var(--blue);border-radius:20px;background:var(--bl);transition:all .15s;}
+.back-btn:hover{background:var(--blue);color:#fff;}
+.unit-badge{font-size:12px;color:var(--text3);margin-left:auto;background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:3px 10px;}
+.tab-nav{background:var(--sf);border-bottom:2px solid var(--bd);position:sticky;top:83px;z-index:99;display:flex;padding:0 1rem;}
+.tab-btn{padding:.7rem 1.4rem;font-size:13px;font-weight:500;color:var(--text2);background:none;border:none;cursor:pointer;font-family:'Noto Sans JP',sans-serif;display:flex;align-items:center;gap:7px;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .15s;white-space:nowrap;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active-ex{color:var(--pink);border-bottom-color:var(--pink);}
+.tab-btn.active-pr{color:var(--blue);border-bottom-color:var(--blue);}
+.tab-btn.active-cf{color:var(--amber);border-bottom-color:var(--amber);}
+.tab-pip{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;}
+.pip-ex{background:#fde8eb;color:var(--pink);}
+.pip-pr{background:var(--bl);color:var(--blue);}
+.pip-cf{background:var(--al);color:var(--amber);}
+.tab-done{width:16px;height:16px;border-radius:50%;background:var(--teal);color:#fff;font-size:9px;display:none;align-items:center;justify-content:center;}
+.page{display:none;animation:fadeTab .2s ease;}
+.page.active{display:block;}
+@keyframes fadeTab{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+main{max-width:720px;margin:0 auto;padding:1.5rem 1rem 6rem;}
+.page-hdr{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:1rem 1.4rem;margin-bottom:1.4rem;display:flex;align-items:center;gap:12px;}
+.page-hdr-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:700;flex-shrink:0;}
+.icon-ex{background:var(--pink);color:#fff;}.icon-pr{background:var(--blue);color:#fff;}.icon-cf{background:var(--amber);color:#fff;}
+.page-hdr-body{flex:1;}
+.page-hdr-title{font-size:15px;font-weight:700;margin-bottom:2px;}
+.page-hdr-desc{font-size:12px;color:var(--text2);}
+.prog-wrap{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:.8rem 1.2rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:12px;}
+.pb-w{flex:1;height:6px;background:var(--bd);border-radius:3px;overflow:hidden;}
+.pb{height:100%;border-radius:3px;transition:width .4s;}
+.pb-pr{background:var(--blue);}.pb-cf{background:var(--amber);}
+.pb-txt{font-size:12px;color:var(--text2);white-space:nowrap;}
+.next-page-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:var(--sf);border:1.5px solid var(--bd);border-radius:var(--r);font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all .15s;margin-top:.5rem;}
+.next-page-btn.pr{border-color:var(--blue);color:var(--blue);background:var(--bl);}
+.next-page-btn.cf{border-color:var(--amber);color:var(--amber);background:var(--al);}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:1.4rem 1.5rem;margin-bottom:1rem;}
+.clabel{font-size:11px;font-weight:700;letter-spacing:.1em;margin-bottom:.85rem;display:flex;align-items:center;gap:6px;}
+.clabel::before{content:'';width:3px;height:14px;border-radius:2px;display:inline-block;}
+.clabel.ex{color:var(--pink);}.clabel.ex::before{background:var(--pink);}
+.clabel.pr{color:var(--blue);}.clabel.pr::before{background:var(--blue);}
+.clabel.cf{color:var(--amber);}.clabel.cf::before{background:var(--amber);}
+.clabel.kai{color:var(--teal);}.clabel.kai::before{background:var(--teal);}
+.q-text{font-size:15px;line-height:2;color:var(--text);margin-bottom:1rem;}
+.prob-src{display:inline-block;font-size:11px;color:var(--text3);background:var(--sf2);border:1px solid var(--bd);border-radius:20px;padding:3px 10px;margin-bottom:.8rem;}
+.point-box{background:var(--al);border:1px solid #e0c888;border-radius:9px;padding:.8rem 1.1rem;margin-bottom:.9rem;font-size:13px;color:var(--amber);line-height:1.8;}
+.point-box strong{display:block;font-size:10px;letter-spacing:.08em;margin-bottom:3px;}
+.important-box{background:#fff8e1;border:2px solid var(--amber);border-radius:9px;padding:.85rem 1.15rem;margin:1rem 0;font-size:14px;color:var(--text);font-weight:700;text-align:center;line-height:1.8;}
+.formula-box{background:var(--bl);border:1px solid #aed6f1;border-radius:10px;padding:1rem 1.4rem;margin:.8rem 0;text-align:center;}
+.formula-frac{display:inline-flex;flex-direction:column;align-items:center;font-size:1em;line-height:1.2;vertical-align:middle;}
+.formula-frac .num{border-bottom:2px solid var(--blue);padding:0 6px;font-weight:700;color:var(--blue);}
+.formula-frac .den{padding:0 6px;font-weight:700;color:var(--blue);}
+.salt-table{width:100%;border-collapse:collapse;margin:.8rem 0;font-size:14px;}
+.salt-table th{background:#e8f4fd;color:var(--blue);font-weight:700;padding:7px 10px;border:1.5px solid #aed6f1;text-align:center;font-size:12px;}
+.salt-table td{padding:7px 10px;border:1.5px solid #aed6f1;text-align:center;background:#fff;}
+.salt-table .hi{background:#fff8e1;font-weight:700;color:var(--amber);}
+.salt-table .hig{background:#e6f5f1;font-weight:700;color:var(--teal);}
+.exp-box{background:var(--sf2);border-radius:9px;padding:.9rem 1.15rem;margin-bottom:.75rem;border-left:3px solid var(--teal);animation:fadeIn .25s ease;}
+.exp-box h4{font-size:11px;color:var(--teal);font-weight:700;letter-spacing:.06em;margin-bottom:.35rem;}
+.exp-box p{font-size:14px;line-height:1.9;color:var(--text);white-space:pre-wrap;}
+.exp-box.blue{border-color:var(--blue);}.exp-box.blue h4{color:var(--blue);}
+.exp-box.amber{border-color:var(--amber);}.exp-box.amber h4{color:var(--amber);}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.reveal-btn{background:var(--teal);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Noto Sans JP',sans-serif;margin-top:.2rem;transition:background .15s;width:100%;}
+.reveal-btn:hover{background:#0b7560;}
+.kai-card{display:none;border-top:3px solid var(--teal);}
+.connector{display:none;flex-direction:column;align-items:center;margin:-.5rem 0;position:relative;z-index:2;}
+.connector-line{width:2px;height:20px;background:var(--teal);}
+.connector-arrow{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:8px solid var(--teal);}
+.choices{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:1rem;}
+.choices-5{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:1rem;}
+@media(max-width:500px){.choices-5{grid-template-columns:1fr 1fr;}}
+.ch{background:var(--sf2);border:1.5px solid var(--bd);border-radius:9px;padding:10px 8px;font-size:14px;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .15s;font-family:'Noto Sans JP',sans-serif;width:100%;}
+.ch:hover:not(:disabled){border-color:var(--blue);background:var(--bl);}
+.ch:disabled{cursor:default;}
+.ch.ok{border-color:var(--teal);background:var(--tl);color:var(--teal);}
+.ch.ng{border-color:var(--pink);background:var(--pl);color:var(--pink);}
+.cnum{width:24px;height:24px;border-radius:50%;background:var(--bd);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.ch.ok .cnum{background:var(--teal);color:#fff;}
+.ch.ng .cnum{background:var(--pink);color:#fff;}
+.timer-wrap{display:flex;align-items:center;gap:10px;margin-bottom:1rem;}
+.timer-ring{position:relative;width:48px;height:48px;flex-shrink:0;}
+.timer-ring svg{width:48px;height:48px;transform:rotate(-90deg);}
+circle{fill:none;stroke-width:3;stroke-linecap:round;}
+.tbg{stroke:var(--bd2);}
+.tfg{stroke:var(--teal);transition:stroke-dashoffset .9s linear;stroke-dasharray:126;stroke-dashoffset:0;}
+.tfg.warn{stroke:var(--amber);}
+.tcenter{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--text2);font-family:'DM Mono',monospace;}
+.timer-msg{font-size:13px;color:var(--text2);line-height:1.5;}
+.timer-msg .goal{color:var(--teal);font-weight:500;}
+.hint-toggle{background:none;border:1px dashed var(--bd);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--text2);cursor:pointer;margin-bottom:.75rem;font-family:'Noto Sans JP',sans-serif;transition:all .15s;}
+.hint-toggle:hover{border-color:var(--blue);color:var(--blue);}
+.hint-box{background:var(--bl);border:1px solid #a8c0e8;border-radius:9px;padding:.75rem 1rem;margin-bottom:.85rem;font-size:13px;color:var(--blue);line-height:1.8;display:none;}
+.abc-wrap{margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid var(--bd);}
+.abc-lbl{font-size:12px;color:var(--text2);margin-bottom:.7rem;}
+.abc-row{display:flex;gap:7px;}
+.abc-btn{flex:1;padding:9px 5px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;border:2px solid;transition:all .15s;font-family:'Noto Sans JP',sans-serif;text-align:center;line-height:1.3;}
+.abc-btn span{display:block;font-size:10px;font-weight:400;margin-top:2px;opacity:.85;}
+.abc-A{border-color:var(--teal);color:var(--teal);background:var(--tl);}
+.abc-A:hover,.abc-A.on{background:var(--teal);color:#fff;}
+.abc-B{border-color:var(--blue);color:var(--blue);background:var(--bl);}
+.abc-B:hover,.abc-B.on{background:var(--blue);color:#fff;}
+.abc-C{border-color:var(--amber);color:var(--amber);background:var(--al);}
+.abc-C:hover,.abc-C.on{background:var(--amber);color:#fff;}
+.prob-n{display:inline-flex;align-items:center;gap:8px;margin-bottom:.9rem;}
+.prob-n .n{width:28px;height:28px;border-radius:6px;font-size:.85rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.n-pr{background:var(--blue);color:#fff;}
+.n-cf{background:var(--amber);color:#fff;}
+.prob-n span{font-size:12px;color:var(--text3);}
+.prob-divider{border:none;border-top:1px dashed var(--bd);margin:1.8rem 0 1.5rem;}
+.fb-ok{display:none;align-items:center;gap:12px;background:#e6faf3;border:2px solid #0d9478;border-radius:12px;padding:12px 16px;margin:8px 0 4px;animation:fbPop .3s ease;}
+.fb-ng{display:none;align-items:center;gap:12px;background:#fde8eb;border:2px solid #d93652;border-radius:12px;padding:12px 16px;margin:8px 0 4px;animation:fbPop .3s ease;}
+@keyframes fbPop{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.reset-btn{background:none;border:1.5px solid #d93652;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;color:#d93652;cursor:pointer;font-family:'Noto Sans JP',sans-serif;margin-left:auto;flex-shrink:0;transition:all .15s;white-space:nowrap;}
+.reset-btn:hover{background:#d93652;color:#fff;}
+.fb-icon{font-size:1.7rem;flex-shrink:0;}
+.fb-text{font-size:13px;font-weight:700;line-height:1.5;}
+.fb-ok .fb-text{color:#0d9478;}
+.fb-ng .fb-text{color:#d93652;}
+.fb-sub{font-size:11px;font-weight:400;display:block;margin-top:1px;opacity:.8;}
+.unit-nav{display:none;flex-direction:column;gap:10px;margin:1.8rem 0 0;padding-top:1.4rem;border-top:2px dashed #d6d2c8;}
+.unit-nav-row{display:flex;gap:8px;flex-wrap:wrap;}
+.unav-btn{flex:1;min-width:120px;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 16px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;border:2px solid;font-family:'Noto Sans JP',sans-serif;transition:all .15s;text-align:center;}
+.unav-index{background:#fff;border-color:#d6d2c8;color:#58544c;}
+.unav-index:hover{border-color:#2055b0;color:#2055b0;background:#eaf0fb;}
+.unav-next{background:#2055b0;border-color:#2055b0;color:#fff;}
+.unav-next:hover{background:#153a80;}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <span class="logo">GAMBA</span><span class="logo-sep">|</span>
+  <span class="logo-sub">公務員試験 数的推理</span>
+</header>
+<div class="back-bar">
+  <a href="index-sugaku.html" class="back-btn">← 単元表に戻る</a>
+  <span class="unit-badge">割合①-2　食塩水の混合</span>
+</div>
+<nav class="tab-nav">
+  <button class="tab-btn active-ex" id="tab-ex" onclick="switchTab('ex')"><span class="tab-pip pip-ex">例</span>例題・解説</button>
+  <button class="tab-btn" id="tab-pr" onclick="switchTab('pr')"><span class="tab-pip pip-pr">練</span>練習問題<span class="tab-done" id="done-pr">✓</span></button>
+  <button class="tab-btn" id="tab-cf" onclick="switchTab('cf')"><span class="tab-pip pip-cf">確</span>確認テスト<span class="tab-done" id="done-cf">✓</span></button>
+</nav>
+<main>
+
+<!-- ══ 例題 ══ -->
+<div class="page active" id="page-ex">
+  <div class="page-hdr">
+    <div class="page-hdr-icon icon-ex">例</div>
+    <div class="page-hdr-body">
+      <div class="page-hdr-title">2種類の食塩水を混ぜる（連立方程式）</div>
+      <div class="page-hdr-desc">割合①-2　食塩水の混合</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="clabel ex">例題　濃度の異なる食塩水の混合</div>
+    <div class="q-text">濃度が <strong>8%</strong>，<strong>15%</strong> の2種類の食塩水があります。この2種類の食塩水をあわせて，濃度が <strong>10%</strong> の食塩水を <strong>700g</strong> 作りたいとき，それぞれ何g ずつ混ぜればよいでしょうか。</div>
+
+    <div class="point-box">
+      <strong>混合問題のポイント</strong>
+      ① 食塩水の量の合計 ＝ 700g　（2本の式を立てる）<br>
+      ② 食塩の量の合計　が等しい<br>
+      ↓　→　この2つで<strong>連立方程式</strong>を解く！
+    </div>
+
+    <!-- ビーカーSVG -->
+    <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:10px;padding:.9rem 1rem;margin:.8rem 0;">
+      <div style="font-size:11px;font-weight:700;color:var(--text3);margin-bottom:.6rem;">🧪 食塩の量に注目する</div>
+      <svg viewBox="0 0 480 115" style="width:100%;max-width:480px;display:block;margin:0 auto;">
+        <defs><marker id="arrM" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#0d9478"/></marker></defs>
+        <!-- ビーカー1: 8% xg -->
+        <rect x="10" y="15" width="90" height="75" rx="4" fill="#dbeafe" stroke="#2055b0" stroke-width="1.5"/>
+        <rect x="12" y="72" width="86" height="16" rx="2" fill="#93c5fd" opacity=".7"/>
+        <text x="55" y="48" font-size="13" fill="#2055b0" text-anchor="middle" font-weight="bold">8 %</text>
+        <text x="55" y="63" font-size="10" fill="#58544c" text-anchor="middle">食塩 8x/100 g</text>
+        <text x="55" y="103" font-size="11" fill="#2055b0" text-anchor="middle" font-weight="bold">x g</text>
+        <!-- プラス -->
+        <text x="116" y="60" font-size="20" fill="#0d9478" text-anchor="middle" font-weight="bold">＋</text>
+        <!-- ビーカー2: 15% yg -->
+        <rect x="136" y="15" width="90" height="75" rx="4" fill="#fce7f3" stroke="#9d174d" stroke-width="1.5"/>
+        <rect x="138" y="60" width="86" height="28" rx="2" fill="#f9a8d4" opacity=".7"/>
+        <text x="181" y="48" font-size="13" fill="#9d174d" text-anchor="middle" font-weight="bold">15 %</text>
+        <text x="181" y="63" font-size="10" fill="#58544c" text-anchor="middle">食塩 15y/100 g</text>
+        <text x="181" y="103" font-size="11" fill="#9d174d" text-anchor="middle" font-weight="bold">y g</text>
+        <!-- 矢印 -->
+        <line x1="242" y1="52" x2="282" y2="52" stroke="#0d9478" stroke-width="2" marker-end="url(#arrM)"/>
+        <text x="262" y="44" font-size="10" fill="#0d9478" text-anchor="middle">混ぜる</text>
+        <!-- ビーカー3: 10% 700g -->
+        <rect x="292" y="15" width="110" height="75" rx="4" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.5"/>
+        <rect x="294" y="62" width="106" height="26" rx="2" fill="#fde047" opacity=".6"/>
+        <text x="347" y="45" font-size="13" fill="#92400e" text-anchor="middle" font-weight="bold">10 %</text>
+        <text x="347" y="60" font-size="10" fill="#58544c" text-anchor="middle">食塩 700×10/100</text>
+        <text x="347" y="72" font-size="10" fill="#58544c" text-anchor="middle">= 70 g</text>
+        <text x="347" y="103" font-size="11" fill="#92400e" text-anchor="middle" font-weight="bold">700 g</text>
+        <!-- 左辺枠 -->
+        <rect x="4" y="4" width="228" height="92" rx="6" fill="none" stroke="#d93652" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="118" y="113" font-size="9" fill="#d93652" text-anchor="middle" font-weight="bold">左辺の食塩の量</text>
+        <!-- 右辺枠 -->
+        <rect x="286" y="4" width="122" height="92" rx="6" fill="none" stroke="#d93652" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="347" y="113" font-size="9" fill="#d93652" text-anchor="middle" font-weight="bold">右辺の食塩の量</text>
+      </svg>
+    </div>
+
+    <button class="reveal-btn" id="rb-q0" onclick="reveal('q0',4)">STEP 1 を見る ▼</button>
+
+    <div id="q0-s0" class="exp-box" style="display:none">
+      <h4>STEP 1　x・y をおいて表を作る</h4>
+      <p>8%の食塩水を <strong>x g</strong>，15%の食塩水を <strong>y g</strong> とおく。</p>
+      <table class="salt-table">
+        <tr><th></th><th>濃度</th><th>食塩水の量</th><th>食塩の量</th></tr>
+        <tr><td>8%食塩水</td><td>8%</td><td class="hi">x g</td><td class="hig">8x/100 g</td></tr>
+        <tr><td>15%食塩水</td><td>15%</td><td class="hi">y g</td><td class="hig">15y/100 g</td></tr>
+        <tr><td>混合後 10%</td><td>10%</td><td>700 g</td><td class="hig">700×10/100 = 70 g</td></tr>
+      </table>
+    </div>
+    <div id="q0-s1" class="exp-box blue" style="display:none">
+      <h4>STEP 2　連立方程式を立てる</h4>
+      <p>① 食塩水の量の合計：　x ＋ y ＝ 700 　…①
+② 食塩の量の合計：　8x/100 ＋ 15y/100 ＝ 70 　…②
+②×100：　<strong>8x ＋ 15y ＝ 7000</strong> 　…②'</p>
+    </div>
+    <div id="q0-s2" class="exp-box" style="display:none">
+      <h4>STEP 3　連立方程式を解く</h4>
+      <p>①×8：　8x ＋ 8y ＝ 5600 　…③
+②'− ③：　7y ＝ 1400
+<strong>y ＝ 200</strong>
+①に代入：　x ＋ 200 ＝ 700 → <strong>x ＝ 500</strong></p>
+    </div>
+    <div id="q0-s3" class="exp-box amber" style="display:none">
+      <h4>STEP 4　答えと確かめ</h4>
+      <p>8%の食塩水 <strong>500g</strong>，15%の食塩水 <strong>200g</strong>
+【確かめ】食塩の量：500×8/100＋200×15/100 = 40＋30 = 70g
+混合後の濃度：70÷700×100 = <strong>10%</strong> ✓</p>
+    </div>
+    <div id="q0-fin" style="display:none">
+      <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+        <button class="abc-btn abc-A" id="q0-kA" onclick="setMark('q0k','A')">✅ A<span>わかった</span></button>
+        <button class="abc-btn abc-B" id="q0-kB" onclick="setMark('q0k','B')">📖 B<span>解説でわかった</span></button>
+        <button class="abc-btn abc-C" id="q0-kC" onclick="setMark('q0k','C')">❓ C<span>わからなかった</span></button>
+      </div></div>
+      <button class="next-page-btn pr" onclick="switchTab('pr')" style="margin-top:1.4rem;">練習問題へ進む →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 練習 ══ -->
+<div class="page" id="page-pr">
+  <div class="page-hdr"><div class="page-hdr-icon icon-pr">練</div>
+    <div class="page-hdr-body"><div class="page-hdr-title">練習問題</div><div class="page-hdr-desc">食塩水の混合を解いてみよう。</div></div>
+  </div>
+  <div class="prog-wrap">
+    <div class="pb-w"><div class="pb pb-pr" id="pb-pr" style="width:0%"></div></div>
+    <div class="pb-txt" id="pb-pr-txt">0 / 2 完了</div>
+  </div>
+
+  <div class="prob-n"><span class="n n-pr">1</span><span>練習 第1問</span></div>
+  <div class="card" id="q1-card">
+    <div class="clabel pr">練習 第1問</div>
+    <div class="q-text">濃度 <strong>8%</strong> の食塩水と，<strong>11%</strong> の食塩水を混ぜ合わせて，10% の食塩水を <strong>300g</strong> 作りたい。それぞれ何g ずつ混ぜるとよいか。</div>
+    <div style="background:var(--sf2);border-radius:9px;padding:.7rem 1rem;margin:.5rem 0;font-size:13px;color:var(--blue);">
+      8%をx g，11%をy g とすると：<br>
+      ① x＋y＝300　② 8x/100＋11y/100＝300×10/100＝30
+    </div>
+    <button class="hint-toggle" onclick="toggleHint('h1')">💡 ヒントを見る</button>
+    <div class="hint-box" id="h1">②×100：8x＋11y＝3000 　①×8：8x＋8y＝2400<br>引いて：3y＝600 → y＝200 → x＝100</div>
+    <div id="t1" class="timer-wrap"><div class="timer-ring" id="ring-q1"><svg viewBox="0 0 44 44"><circle class="tbg" cx="22" cy="22" r="20"/><circle class="tfg" cx="22" cy="22" r="20"/></svg><div class="tcenter" id="tc1">0:00</div></div><div class="timer-msg" id="tm1">自力で考えましょう。<span class="goal">目標 5分以内</span></div></div>
+    <div class="choices" id="ch-q1">
+      <button class="ch" onclick="ans('q1',0,1)"><span class="cnum">1</span>8%：150g，11%：150g</button>
+      <button class="ch" onclick="ans('q1',1,1)"><span class="cnum">2</span>8%：100g，11%：200g</button>
+      <button class="ch" onclick="ans('q1',2,1)"><span class="cnum">3</span>8%：200g，11%：100g</button>
+      <button class="ch" onclick="ans('q1',3,1)"><span class="cnum">4</span>8%：120g，11%：180g</button>
+    </div>
+    <div class="fb-ok" id="fb-ok-q1"><span class="fb-icon">🎉</span><span class="fb-text">正解！<span class="fb-sub">x=100g，y=200g</span></span></div>
+    <div class="fb-ng" id="fb-ng-q1"><span class="fb-icon">😢</span><span class="fb-text">もう一度！<span class="fb-sub">食塩の量の合計で方程式を作りましょう</span></span><button class="reset-btn" onclick="resetQ('q1')">🔄 もう一度</button></div>
+    <div id="q1-res" style="display:none">
+      <div class="point-box"><strong>解法のカギ</strong>①x+y=300 ②8x+11y=3000。②-①×8 → 3y=600 → y=200，x=100。</div>
+      <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+        <button class="abc-btn abc-A" id="q1-mA" onclick="setMark('q1m','A')">✅ A<span>わかった</span></button>
+        <button class="abc-btn abc-B" id="q1-mB" onclick="setMark('q1m','B')">📖 B<span>解説でわかった</span></button>
+        <button class="abc-btn abc-C" id="q1-mC" onclick="setMark('q1m','C')">❓ C<span>わからなかった</span></button>
+      </div></div>
+    </div>
+  </div>
+  <div class="connector" id="cn-q1"><div class="connector-line"></div><div class="connector-arrow"></div></div>
+  <div class="card kai-card" id="kai-q1">
+    <div class="clabel kai">段階解説</div>
+    <div id="q1-s0" class="exp-box" style="display:none"><h4>STEP 1　表を作る</h4>
+    <table class="salt-table">
+      <tr><th></th><th>濃度</th><th>食塩水</th><th>食塩の量</th></tr>
+      <tr><td>8%食塩水</td><td>8%</td><td class="hi">x g</td><td class="hig">8x/100 g</td></tr>
+      <tr><td>11%食塩水</td><td>11%</td><td class="hi">y g</td><td class="hig">11y/100 g</td></tr>
+      <tr><td>混合後10%</td><td>10%</td><td>300 g</td><td class="hig">30 g</td></tr>
+    </table></div>
+    <div id="q1-s1" class="exp-box blue" style="display:none"><h4>STEP 2　連立方程式を立てる</h4><p>① x＋y＝300
+②×100：8x＋11y＝3000</p></div>
+    <div id="q1-s2" class="exp-box" style="display:none"><h4>STEP 3　解く</h4><p>②−①×8：3y＝600 → <strong>y＝200</strong>
+①代入：x＝<strong>100</strong></p></div>
+    <div id="q1-s3" class="exp-box amber" style="display:none"><h4>STEP 4　答え</h4><p>8%食塩水 <strong>100g</strong>，11%食塩水 <strong>200g</strong>
+確かめ：8×100/100 ＋11×200/100 = 8＋22 = 30g → 30÷300×100 = 10% ✓</p></div>
+    <button class="reveal-btn" id="rb-q1" onclick="reveal('q1',4)">STEP 1 を見る ▼</button>
+    <div id="q1-fin" style="display:none"><div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+      <button class="abc-btn abc-A" id="q1-kA" onclick="setMark('q1k','A')">✅ A<span>わかった</span></button>
+      <button class="abc-btn abc-B" id="q1-kB" onclick="setMark('q1k','B')">📖 B<span>解説でわかった</span></button>
+      <button class="abc-btn abc-C" id="q1-kC" onclick="setMark('q1k','C')">❓ C<span>わからなかった</span></button>
+    </div></div></div>
+  </div>
+
+  <hr class="prob-divider">
+
+  <div class="prob-n"><span class="n n-pr">2</span><span>練習 第2問</span></div>
+  <div class="card" id="q2-card">
+    <div class="clabel pr">練習 第2問</div>
+    <div class="q-text">濃度 <strong>10%</strong> の食塩水と，<strong>6%</strong> の食塩水を混ぜ合わせて，8% の食塩水を <strong>300g</strong> 作りたい。それぞれ何g ずつ混ぜるとよいか。</div>
+    <button class="hint-toggle" onclick="toggleHint('h2')">💡 ヒントを見る</button>
+    <div class="hint-box" id="h2">①x+y=300 ②10x+6y=2400<br>②−①×6：4x=600 → x=150 → y=150</div>
+    <div id="t2" class="timer-wrap"><div class="timer-ring" id="ring-q2"><svg viewBox="0 0 44 44"><circle class="tbg" cx="22" cy="22" r="20"/><circle class="tfg" cx="22" cy="22" r="20"/></svg><div class="tcenter" id="tc2">0:00</div></div><div class="timer-msg" id="tm2">自力で考えましょう。<span class="goal">目標 5分以内</span></div></div>
+    <div class="choices" id="ch-q2">
+      <button class="ch" onclick="ans('q2',0,1)"><span class="cnum">1</span>10%：120g，6%：180g</button>
+      <button class="ch" onclick="ans('q2',1,1)"><span class="cnum">2</span>10%：150g，6%：150g</button>
+      <button class="ch" onclick="ans('q2',2,1)"><span class="cnum">3</span>10%：180g，6%：120g</button>
+      <button class="ch" onclick="ans('q2',3,1)"><span class="cnum">4</span>10%：200g，6%：100g</button>
+    </div>
+    <div class="fb-ok" id="fb-ok-q2"><span class="fb-icon">🎉</span><span class="fb-text">正解！<span class="fb-sub">どちらも150g</span></span></div>
+    <div class="fb-ng" id="fb-ng-q2"><span class="fb-icon">😢</span><span class="fb-text">もう一度！<span class="fb-sub">食塩の量：300×8/100=24g</span></span><button class="reset-btn" onclick="resetQ('q2')">🔄 もう一度</button></div>
+    <div id="q2-res" style="display:none">
+      <div class="point-box"><strong>解法のカギ</strong>10x+6y=2400，x+y=300 → x=y=150g。</div>
+      <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+        <button class="abc-btn abc-A" id="q2-mA" onclick="setMark('q2m','A')">✅ A<span>わかった</span></button>
+        <button class="abc-btn abc-B" id="q2-mB" onclick="setMark('q2m','B')">📖 B<span>解説でわかった</span></button>
+        <button class="abc-btn abc-C" id="q2-mC" onclick="setMark('q2m','C')">❓ C<span>わからなかった</span></button>
+      </div></div>
+    </div>
+  </div>
+  <div class="connector" id="cn-q2"><div class="connector-line"></div><div class="connector-arrow"></div></div>
+  <div class="card kai-card" id="kai-q2">
+    <div class="clabel kai">段階解説</div>
+    <div id="q2-s0" class="exp-box" style="display:none"><h4>STEP 1　表・方程式</h4>
+    <table class="salt-table">
+      <tr><th></th><th>濃度</th><th>食塩水</th><th>食塩</th></tr>
+      <tr><td>10%</td><td>10%</td><td class="hi">x g</td><td class="hig">10x/100</td></tr>
+      <tr><td>6%</td><td>6%</td><td class="hi">y g</td><td class="hig">6y/100</td></tr>
+      <tr><td>混合8%</td><td>8%</td><td>300g</td><td class="hig">24g</td></tr>
+    </table>
+    <p>① x＋y＝300 　② 10x＋6y＝2400</p></div>
+    <div id="q2-s1" class="exp-box blue" style="display:none"><h4>STEP 2　解く</h4><p>②−①×6：4x＝600 → <strong>x＝150</strong> → y＝150</p></div>
+    <div id="q2-s2" class="exp-box amber" style="display:none"><h4>STEP 3　答え</h4><p>10%食塩水 <strong>150g</strong>，6%食塩水 <strong>150g</strong> ✓</p></div>
+    <button class="reveal-btn" id="rb-q2" onclick="reveal('q2',3)">STEP 1 を見る ▼</button>
+    <div id="q2-fin" style="display:none"><div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+      <button class="abc-btn abc-A" id="q2-kA" onclick="setMark('q2k','A')">✅ A<span>わかった</span></button>
+      <button class="abc-btn abc-B" id="q2-kB" onclick="setMark('q2k','B')">📖 B<span>解説でわかった</span></button>
+      <button class="abc-btn abc-C" id="q2-kC" onclick="setMark('q2k','C')">❓ C<span>わからなかった</span></button>
+    </div></div></div>
+  </div>
+  <button class="next-page-btn cf" onclick="switchTab('cf')" style="margin-top:1rem;">確認テストへ進む →</button>
+</div>
+
+<!-- ══ 確認テスト ══ -->
+<div class="page" id="page-cf">
+  <div class="page-hdr"><div class="page-hdr-icon icon-cf">確</div>
+    <div class="page-hdr-body"><div class="page-hdr-title">確認テスト（実戦問題）</div><div class="page-hdr-desc">本試験過去問に挑戦しよう。</div></div>
+  </div>
+  <div class="prog-wrap">
+    <div class="pb-w"><div class="pb pb-cf" id="pb-cf" style="width:0%"></div></div>
+    <div class="pb-txt" id="pb-cf-txt">0 / 1 完了</div>
+  </div>
+
+  <div class="card" id="q3-card">
+    <div class="clabel cf">確認テスト</div>
+    <span class="prob-src">地方中級・平成7年度</span>
+    <div class="q-text">Aのビーカーに濃度 <strong>6%</strong> の食塩水が，Bのビーカーに濃度 <strong>15%</strong> の食塩水が何g か入っている。いま，A，Bから <strong>100g</strong> ずつ取り出して，相互に入替えをし，よくかき混ぜた。このとき，Aの濃度は <strong>8%</strong> であった。最初にAのビーカーに入っていた食塩水は何gか。</div>
+
+    <!-- 図解 -->
+    <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:10px;padding:.8rem 1rem;margin:.7rem 0;">
+      <div style="font-size:11px;font-weight:700;color:var(--text3);margin-bottom:.5rem;">🧪 入れ替え前後の食塩量に注目</div>
+      <svg viewBox="0 0 480 100" style="width:100%;max-width:480px;display:block;margin:0 auto;">
+        <defs><marker id="arrCF" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#0d9478"/></marker></defs>
+        <!-- A最初 -->
+        <rect x="10" y="12" width="80" height="66" rx="4" fill="#dbeafe" stroke="#2055b0" stroke-width="1.5"/>
+        <rect x="12" y="60" width="76" height="16" rx="2" fill="#93c5fd" opacity=".7"/>
+        <text x="50" y="43" font-size="12" fill="#2055b0" text-anchor="middle" font-weight="bold">A：6%</text>
+        <text x="50" y="90" font-size="11" fill="#58544c" text-anchor="middle">x g</text>
+        <!-- 矢印（入替） -->
+        <line x1="100" y1="40" x2="140" y2="40" stroke="#0d9478" stroke-width="1.5" marker-end="url(#arrCF)"/>
+        <line x1="140" y1="55" x2="100" y2="55" stroke="#9d174d" stroke-width="1.5" marker-end="url(#arrCF)"/>
+        <text x="120" y="35" font-size="9" fill="#0d9478" text-anchor="middle">100g</text>
+        <text x="120" y="68" font-size="9" fill="#9d174d" text-anchor="middle">100g</text>
+        <!-- B最初 -->
+        <rect x="150" y="12" width="80" height="66" rx="4" fill="#fce7f3" stroke="#9d174d" stroke-width="1.5"/>
+        <rect x="152" y="48" width="76" height="28" rx="2" fill="#f9a8d4" opacity=".7"/>
+        <text x="190" y="38" font-size="12" fill="#9d174d" text-anchor="middle" font-weight="bold">B：15%</text>
+        <text x="190" y="90" font-size="11" fill="#58544c" text-anchor="middle">y g</text>
+        <!-- 矢印結果 -->
+        <line x1="244" y1="45" x2="284" y2="45" stroke="#0d9478" stroke-width="2" marker-end="url(#arrCF)"/>
+        <text x="264" y="38" font-size="9" fill="#0d9478" text-anchor="middle">混ぜた後</text>
+        <!-- A混ぜ後 -->
+        <rect x="294" y="12" width="80" height="66" rx="4" fill="#e8f4fd" stroke="#2055b0" stroke-width="1.5"/>
+        <rect x="296" y="52" width="76" height="24" rx="2" fill="#93c5fd" opacity=".6"/>
+        <text x="334" y="42" font-size="12" fill="#2055b0" text-anchor="middle" font-weight="bold">A：8%</text>
+        <text x="334" y="55" font-size="10" fill="#58544c" text-anchor="middle">食塩量を計算</text>
+        <text x="334" y="90" font-size="11" fill="#58544c" text-anchor="middle">x g</text>
+      </svg>
+    </div>
+
+    <div id="t3" class="timer-wrap"><div class="timer-ring" id="ring-q3"><svg viewBox="0 0 44 44"><circle class="tbg" cx="22" cy="22" r="20"/><circle class="tfg" cx="22" cy="22" r="20"/></svg><div class="tcenter" id="tc3">0:00</div></div><div class="timer-msg" id="tm3">自力で考えましょう。<span class="goal">目標 5分以内</span></div></div>
+    <div class="choices" id="ch-q3">
+      <button class="ch" onclick="ans('q3',0,3)"><span class="cnum">1</span>300g</button>
+      <button class="ch" onclick="ans('q3',1,3)"><span class="cnum">2</span>350g</button>
+      <button class="ch" onclick="ans('q3',2,3)"><span class="cnum">3</span>400g</button>
+      <button class="ch" onclick="ans('q3',3,3)"><span class="cnum">4</span>450g</button>
+      <button class="ch" onclick="ans('q3',4,3)"><span class="cnum">5</span>500g</button>
+    </div>
+    <div class="fb-ok" id="fb-ok-q3"><span class="fb-icon">🎉</span><span class="fb-text">正解！<span class="fb-sub">x=450g 正答4</span></span></div>
+    <div class="fb-ng" id="fb-ng-q3"><span class="fb-icon">😢</span><span class="fb-text">もう一度！<span class="fb-sub">Aの食塩量をxで表して=8%の方程式へ</span></span><button class="reset-btn" onclick="resetQ('q3')">🔄 もう一度</button></div>
+    <div id="q3-res" style="display:none">
+      <div class="clabel kai">段階解説</div>
+      <div class="exp-box"><h4>STEP 1　入れ替え後のAの食塩量を求める</h4><p>最初Aにあった食塩水 x g，食塩 = x × 6/100 g
+Aから100g取り出した後，Aの食塩水 = (x−100) g，食塩 = (x−100) × 6/100 g
+BからAに100g入れると，食塩が 100 × 15/100 = 15g 増える
+入れ替え後のAの食塩量 = (x−100) × 6/100 + 15 g</p></div>
+      <div class="exp-box blue"><h4>STEP 2　方程式を立てる（入れ替え後のAの濃度 = 8%）</h4><p>食塩水の量は x g のまま（100g取り出して100g入れた）
+{(x−100)×6/100 + 15} ÷ x = 8/100
+両辺 × 100x：
+(x−100) × 6 + 1500 = 8x
+6x − 600 + 1500 = 8x
+<strong>900 = 2x → x = 450</strong></p></div>
+      <div class="exp-box amber"><h4>✅ 正答は 4（450g）</h4><p>確かめ：A取り出し後の食塩 = 350×6/100=21g，B100g追加で+15g=36g
+36÷450×100 = 8% ✓</p></div>
+      <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+        <button class="abc-btn abc-A" id="q3-mA" onclick="setMark('q3m','A')">✅ A<span>わかった</span></button>
+        <button class="abc-btn abc-B" id="q3-mB" onclick="setMark('q3m','B')">📖 B<span>解説でわかった</span></button>
+        <button class="abc-btn abc-C" id="q3-mC" onclick="setMark('q3m','C')">❓ C<span>わからなかった</span></button>
+      </div></div>
+    </div>
+  </div>
+  <div class="unit-nav" id="unit-nav">
+    <div class="unit-nav-row">
+      <a href="wariai1-1.html" class="unav-btn unav-index">← 前へ：濃度の基本</a>
+      <a href="wariai1-3.html" class="unav-btn unav-next">次へ：食塩を加える →</a>
+    </div>
+  </div>
+</div>
+</main>
+
+
+<script>
+const answered={},stepRev={},timers={},TMAX=300;
+let pracDone=0,cfDone=0;
+
+function switchTab(tab){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  ['ex','pr','cf'].forEach(t=>{const b=document.getElementById('tab-'+t);if(b)b.className='tab-btn';});
+  const pg=document.getElementById('page-'+tab);if(pg)pg.classList.add('active');
+  const tb=document.getElementById('tab-'+tab);if(tb)tb.classList.add('active-'+tab);
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(tab==='pr'&&!answered.q1)startTimer('q1');
+  if(tab==='cf'&&!answered.q3)startTimer('q3');
+}
+
+function startTimer(qid){
+  if(timers[qid]||answered[qid])return;
+  const start=Date.now();const n=qid.slice(1);tick(0);
+  timers[qid]=setInterval(()=>tick(Math.floor((Date.now()-start)/1000)),1000);
+  function tick(sec){
+    const ring=document.getElementById('ring-'+qid);if(!ring)return;
+    const fg=ring.querySelector('.tfg');
+    const tc=ring.querySelector('.tcenter');
+    const msg=document.getElementById('tm'+n);
+    const pct=Math.min(sec/TMAX,1);
+    fg.style.strokeDashoffset=126*pct;
+    fg.className='tfg'+(pct>.8?' warn':'');
+    const m=Math.floor(sec/60),s=sec%60;
+    if(tc)tc.textContent=m+':'+(s<10?'0':'')+s;
+    if(msg){
+      if(sec<60)msg.innerHTML='自力で考えましょう。<span class="goal">目標 5分以内</span>';
+      else if(sec<300)msg.innerHTML='じっくり考えています…<span class="goal">まだ大丈夫！</span>';
+      else msg.innerHTML='解説を見て確認しましょう。';
+    }
+  }
+}
+function stopTimer(qid){clearInterval(timers[qid]);timers[qid]=null;}
+
+function ans(qid,idx,correct){
+  if(answered[qid])return;
+  answered[qid]=true;stopTimer(qid);
+  const n=qid.slice(1);
+  const tw=document.getElementById('t'+n);if(tw)tw.style.display='none';
+  document.querySelectorAll('#ch-'+qid+' .ch').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===correct){b.className='ch ok';b.querySelector('.cnum').style.cssText='background:var(--teal);color:#fff';}
+    else if(i===idx&&i!==correct){b.className='ch ng';b.querySelector('.cnum').style.cssText='background:var(--pink);color:#fff';}
+  });
+  const isOk=(idx===correct);
+  const fok=document.getElementById('fb-ok-'+qid);const fng=document.getElementById('fb-ng-'+qid);
+  if(isOk){if(fok)fok.style.display='flex';_confetti();}
+  else{if(fng)fng.style.display='flex';}
+  const res=document.getElementById(qid+'-res');if(res)res.style.display='block';
+  const cn=document.getElementById('cn-'+qid);if(cn)cn.style.display='flex';
+  const kc=document.getElementById('kai-'+qid);if(kc){kc.style.display='block';setTimeout(()=>kc.scrollIntoView({behavior:'smooth',block:'start'}),100);}
+  if(['q1','q2'].includes(qid)){
+    pracDone++;
+    const pb=document.getElementById('pb-pr');if(pb)pb.style.width=(pracDone/2*100)+'%';
+    const pt=document.getElementById('pb-pr-txt');if(pt)pt.textContent=pracDone+' / 2 完了';
+    if(pracDone===2){const dp=document.getElementById('done-pr');if(dp)dp.style.display='flex';}
+    if(qid==='q1'&&!answered.q2)setTimeout(()=>startTimer('q2'),400);
+  }
+  if(['q3'].includes(qid)){
+    cfDone++;
+    const pb=document.getElementById('pb-cf');if(pb)pb.style.width='100%';
+    const pt=document.getElementById('pb-cf-txt');if(pt)pt.textContent='1 / 1 完了';
+    const dp=document.getElementById('done-cf');if(dp)dp.style.display='flex';
+    const un=document.getElementById('unit-nav');if(un)un.style.display='flex';
+  }
+}
+
+function reveal(qid,total){
+  if(!stepRev[qid])stepRev[qid]=0;
+  const r=stepRev[qid];
+  const el=document.getElementById(qid+'-s'+r);
+  if(el){el.style.display='block';stepRev[qid]++;setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'nearest'}),60);}
+  const btn=document.getElementById('rb-'+qid);
+  if(stepRev[qid]>=total){
+    if(btn)btn.style.display='none';
+    const fin=document.getElementById(qid+'-fin');
+    if(fin){fin.style.display='block';setTimeout(()=>fin.scrollIntoView({behavior:'smooth',block:'nearest'}),60);}
+  } else {
+    if(btn)btn.textContent='STEP '+stepRev[qid]+' を見る ▼';
+  }
+}
+
+function toggleHint(id){const b=document.getElementById(id);if(b)b.style.display=b.style.display==='block'?'none':'block';}
+function setMark(prefix,m){const base=prefix.slice(0,2);const kind=prefix.slice(2);['A','B','C'].forEach(x=>{const el=document.getElementById(base+'-'+kind+x);if(el)el.classList.toggle('on',x===m);});}
+function resetQ(qid){
+  delete answered[qid];stopTimer(qid);delete timers[qid];
+  const n=parseInt(qid.slice(1));
+  if(['q1','q2'].includes(qid)){if(pracDone>0)pracDone--;const pb=document.getElementById('pb-pr');if(pb)pb.style.width=(pracDone/2*100)+'%';const pt=document.getElementById('pb-pr-txt');if(pt)pt.textContent=pracDone+' / 2 完了';const dp=document.getElementById('done-pr');if(dp)dp.style.display='none';}
+  const fok=document.getElementById('fb-ok-'+qid);if(fok)fok.style.display='none';
+  const fng=document.getElementById('fb-ng-'+qid);if(fng)fng.style.display='none';
+  const res=document.getElementById(qid+'-res');if(res)res.style.display='none';
+  const cn=document.getElementById('cn-'+qid);if(cn)cn.style.display='none';
+  const kc=document.getElementById('kai-'+qid);if(kc)kc.style.display='none';
+  const tw=document.getElementById('t'+n);if(tw)tw.style.display='flex';
+  document.querySelectorAll('#ch-'+qid+' .ch').forEach(b=>{b.disabled=false;b.className='ch';const cn2=b.querySelector('.cnum');if(cn2)cn2.style.cssText='';});
+  const steps=document.querySelectorAll('[id^="'+qid+'-s"]');steps.forEach(el=>el.style.display='none');
+  stepRev[qid]=0;
+  const rb=document.getElementById('rb-'+qid);if(rb){rb.style.display='';rb.textContent='STEP 1 を見る ▼';}
+  const fin=document.getElementById(qid+'-fin');if(fin)fin.style.display='none';
+  startTimer(qid);
+}
+function _confetti(){
+  var cv=document.getElementById('_cf');if(!cv){cv=document.createElement('canvas');cv.id='_cf';cv.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;';document.body.appendChild(cv);}
+  var ctx=cv.getContext('2d');cv.width=innerWidth;cv.height=innerHeight;
+  var pts=[],run=true;
+  for(var i=0;i<180;i++)pts.push({x:Math.random()*cv.width,y:-Math.random()*cv.height*.5,s:Math.random()*8+4,c:'hsl('+Math.floor(Math.random()*360)+',80%,60%)',sp:Math.random()*4+2,r:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.15});
+  (function step(){if(!run)return;requestAnimationFrame(step);ctx.clearRect(0,0,cv.width,cv.height);pts.forEach(function(p){p.y+=p.sp;p.r+=p.rv;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.fillStyle=p.c;ctx.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);ctx.restore();});})();
+  setTimeout(function(){run=false;ctx.clearRect(0,0,cv.width,cv.height);},3500);
+}
+startTimer('q1');
+</script>
+</body>
+</html>

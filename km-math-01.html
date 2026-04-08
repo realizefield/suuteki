@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAMBAシステム｜掛け算の虫食い算</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f4ef;--sf:#fff;--sf2:#f0ede6;--sf3:#e6e2da;
+  --bd:#d6d2c8;--bd2:#bcb8ae;
+  --pink:#d93652;--teal:#0d9478;--blue:#2055b0;--amber:#a86000;
+  --tl:#e6f5f1;--bl:#eaf0fb;--al:#fdf2dd;--pl:#fde8eb;
+  --text:#1a1814;--text2:#58544c;--text3:#98948c;
+  --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;min-height:100vh;}
+
+/* ── HEADER ── */
+.site-header{
+  background:var(--sf);
+  border-bottom:1px solid var(--bd);
+  padding:.65rem 1.5rem;
+  display:flex;align-items:center;gap:12px;
+  position:sticky;top:0;z-index:100;
+}
+.logo{font-family:'Shippori Mincho',serif;font-size:1.05rem;color:var(--pink);}
+.logo-sep{color:var(--bd2);}
+.logo-sub{font-size:12px;color:var(--text2);}
+
+/* ── TAB NAV ── */
+.tab-nav{
+  background:var(--sf);
+  border-bottom:2px solid var(--bd);
+  position:sticky;top:46px;z-index:99;
+  display:flex;
+  padding:0 1rem;
+  gap:0;
+}
+.tab-btn{
+  padding:.7rem 1.4rem;
+  font-size:13px;font-weight:500;
+  color:var(--text2);
+  background:none;border:none;
+  cursor:pointer;
+  position:relative;
+  font-family:'Noto Sans JP',sans-serif;
+  display:flex;align-items:center;gap:7px;
+  border-bottom:3px solid transparent;
+  margin-bottom:-2px;
+  transition:color .15s;
+  white-space:nowrap;
+}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active-ex{color:var(--pink);border-bottom-color:var(--pink);}
+.tab-btn.active-pr{color:var(--blue);border-bottom-color:var(--blue);}
+.tab-btn.active-cf{color:var(--amber);border-bottom-color:var(--amber);}
+.tab-pip{
+  width:18px;height:18px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;
+}
+.pip-ex{background:#fde8eb;color:var(--pink);}
+.pip-pr{background:var(--bl);color:var(--blue);}
+.pip-cf{background:var(--al);color:var(--amber);}
+.tab-done{
+  width:16px;height:16px;border-radius:50%;
+  background:var(--teal);color:#fff;
+  font-size:9px;display:flex;align-items:center;justify-content:center;
+  display:none;
+}
+
+/* ── PAGE PANELS ── */
+.page{display:none;animation:fadeTab .2s ease;}
+.page.active{display:block;}
+@keyframes fadeTab{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+main{max-width:720px;margin:0 auto;padding:1.5rem 1rem 6rem;}
+
+/* ── PAGE HEADER ── */
+.page-hdr{
+  background:var(--sf);border:1px solid var(--bd);
+  border-radius:var(--r);padding:1rem 1.4rem;
+  margin-bottom:1.4rem;
+  display:flex;align-items:center;gap:12px;
+}
+.page-hdr-icon{
+  width:36px;height:36px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.95rem;font-weight:700;flex-shrink:0;
+}
+.icon-ex{background:var(--pink);color:#fff;}
+.icon-pr{background:var(--blue);color:#fff;}
+.icon-cf{background:var(--amber);color:#fff;}
+.page-hdr-body{flex:1;}
+.page-hdr-title{font-size:15px;font-weight:700;margin-bottom:2px;}
+.page-hdr-desc{font-size:12px;color:var(--text2);}
+
+/* ── PROGRESS ── */
+.prog-wrap{
+  background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);
+  padding:.8rem 1.2rem;margin-bottom:1.2rem;
+  display:flex;align-items:center;gap:12px;
+}
+.pb-w{flex:1;height:6px;background:var(--bd);border-radius:3px;overflow:hidden;}
+.pb{height:100%;border-radius:3px;transition:width .4s;}
+.pb-pr{background:var(--blue);}
+.pb-cf{background:var(--amber);}
+.pb-txt{font-size:12px;color:var(--text2);white-space:nowrap;}
+
+/* ── NEXT PAGE BUTTON ── */
+.next-page-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;padding:12px;
+  background:var(--sf);border:1.5px solid var(--bd);
+  border-radius:var(--r);
+  font-size:13px;font-weight:500;color:var(--text2);
+  cursor:pointer;font-family:'Noto Sans JP',sans-serif;
+  transition:all .15s;margin-top:.5rem;
+}
+.next-page-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--bl);}
+.next-page-btn.pr{border-color:var(--blue);color:var(--blue);background:var(--bl);}
+.next-page-btn.cf{border-color:var(--amber);color:var(--amber);background:var(--al);}
+
+/* ── CARD ── */
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:1.4rem 1.5rem;margin-bottom:1rem;}
+.clabel{font-size:11px;font-weight:700;letter-spacing:.1em;margin-bottom:.85rem;display:flex;align-items:center;gap:6px;}
+.clabel::before{content:'';width:3px;height:14px;border-radius:2px;display:inline-block;}
+.clabel.ex{color:var(--pink);} .clabel.ex::before{background:var(--pink);}
+.clabel.pr{color:var(--blue);} .clabel.pr::before{background:var(--blue);}
+.clabel.cf{color:var(--amber);} .clabel.cf::before{background:var(--amber);}
+.clabel.kai{color:var(--teal);} .clabel.kai::before{background:var(--teal);}
+
+.q-text{font-size:15px;line-height:1.95;color:var(--text);margin-bottom:1.2rem;}
+
+/* ── PROBLEM SOURCE ── */
+.prob-src{display:inline-block;font-size:11px;color:var(--text3);background:var(--sf2);border:1px solid var(--bd);border-radius:20px;padding:3px 10px;margin-bottom:1.1rem;}
+
+/* ── CALC ── */
+.calc-block{background:var(--sf2);border:1px solid var(--bd);border-radius:9px;padding:1.1rem 1.4rem;margin-bottom:1.1rem;display:inline-block;}
+.calc-row{display:flex;align-items:center;justify-content:flex-end;gap:3px;font-family:'DM Mono',monospace;font-size:1.15rem;line-height:2.1;}
+.calc-row.op{border-bottom:2px solid var(--text);padding-bottom:2px;margin-bottom:2px;}
+.calc-row.fin{border-top:2px solid var(--text);padding-top:2px;font-weight:700;}
+.cell{width:28px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:4px;font-size:1.05rem;}
+.vA{background:#ffe0e8;color:#c02040;font-weight:700;}
+.vB{background:#e0eeff;color:#1540a0;font-weight:700;}
+.vC{background:#e0f7f0;color:#0a7060;font-weight:700;}
+.bl{background:var(--sf3);border:1px dashed var(--bd2);color:var(--text3);font-size:.8rem;}
+.kn{color:var(--text);}
+.ops{font-size:1rem;color:var(--text2);width:18px;text-align:center;}
+.ind{width:28px;}
+
+/* mini calc */
+.mini-wrap{background:var(--sf2);border:1px solid var(--bd);border-radius:9px;padding:.8rem 1rem;margin-bottom:1.2rem;display:flex;gap:1.2rem;align-items:flex-start;flex-wrap:wrap;}
+.mini-desc{font-size:13px;color:var(--text2);line-height:1.8;flex:1;min-width:130px;}
+.mini-desc strong{color:var(--text);}
+.mini-calc .cell{width:22px;height:26px;font-size:.85rem;}
+.mini-calc .cell.bl{font-size:.7rem;}
+.mini-calc .ind{width:22px;}
+.mini-calc .calc-row{line-height:1.9;font-size:.95rem;}
+.mini-calc .ops{width:14px;}
+
+/* choices */
+.choices{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:1rem;}
+@media(max-width:480px){.choices{grid-template-columns:1fr 1fr;}}
+.ch{background:var(--sf2);border:1.5px solid var(--bd);border-radius:9px;padding:10px 6px;font-size:14px;color:var(--text);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .15s;font-family:'Noto Sans JP',sans-serif;width:100%;}
+.ch:hover:not(:disabled){border-color:var(--blue);background:var(--bl);}
+.ch:disabled{cursor:default;}
+.ch.ok{border-color:var(--teal);background:var(--tl);color:var(--teal);}
+.ch.ng{border-color:var(--pink);background:var(--pl);color:var(--pink);}
+.cnum{width:24px;height:24px;border-radius:50%;background:var(--bd);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
+.ch.ok .cnum{background:var(--teal);color:#fff;}
+.ch.ng .cnum{background:var(--pink);color:#fff;}
+
+/* timer */
+.timer-wrap{display:flex;align-items:center;gap:10px;margin-bottom:1rem;}
+.timer-ring{position:relative;width:48px;height:48px;flex-shrink:0;}
+.timer-ring svg{width:48px;height:48px;transform:rotate(-90deg);}
+circle{fill:none;stroke-width:3;stroke-linecap:round;}
+.tbg{stroke:var(--bd2);}
+.tfg{stroke:var(--teal);transition:stroke-dashoffset .9s linear;stroke-dasharray:126;stroke-dashoffset:0;}
+.tfg.warn{stroke:var(--amber);}
+.tcenter{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--text2);font-family:'DM Mono',monospace;}
+.timer-msg{font-size:13px;color:var(--text2);line-height:1.5;}
+.timer-msg .goal{color:var(--teal);font-weight:500;}
+
+/* point box */
+.point-box{background:var(--al);border:1px solid #e0c888;border-radius:9px;padding:.8rem 1.1rem;margin-bottom:.9rem;font-size:13px;color:var(--amber);line-height:1.7;}
+.point-box strong{display:block;font-size:10px;letter-spacing:.08em;margin-bottom:3px;}
+
+/* abc */
+.abc-wrap{margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid var(--bd);}
+.abc-lbl{font-size:12px;color:var(--text2);margin-bottom:.7rem;}
+.abc-row{display:flex;gap:7px;}
+.abc-btn{flex:1;padding:9px 5px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;border:2px solid;transition:all .15s;font-family:'Noto Sans JP',sans-serif;text-align:center;line-height:1.3;}
+.abc-btn span{display:block;font-size:10px;font-weight:400;margin-top:2px;opacity:.85;}
+.abc-A{border-color:var(--teal);color:var(--teal);background:var(--tl);}
+.abc-A:hover,.abc-A.on{background:var(--teal);color:#fff;}
+.abc-B{border-color:var(--blue);color:var(--blue);background:var(--bl);}
+.abc-B:hover,.abc-B.on{background:var(--blue);color:#fff;}
+.abc-C{border-color:var(--amber);color:var(--amber);background:var(--al);}
+.abc-C:hover,.abc-C.on{background:var(--amber);color:#fff;}
+
+/* exp boxes */
+.exp-box{background:var(--sf2);border-radius:9px;padding:.9rem 1.15rem;margin-bottom:.75rem;border-left:3px solid var(--teal);animation:fadeIn .25s ease;}
+.exp-box h4{font-size:11px;color:var(--teal);font-weight:700;letter-spacing:.06em;margin-bottom:.35rem;}
+.exp-box p{font-size:14px;line-height:1.9;color:var(--text);white-space:pre-wrap;}
+.exp-box.blue{border-color:var(--blue);} .exp-box.blue h4{color:var(--blue);}
+.exp-box.amber{border-color:var(--amber);} .exp-box.amber h4{color:var(--amber);}
+.exp-box.pink{border-color:var(--pink);} .exp-box.pink h4{color:var(--pink);}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* reveal btn */
+.reveal-btn{background:var(--teal);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Noto Sans JP',sans-serif;margin-top:.2rem;transition:background .15s;}
+.reveal-btn:hover{background:#0b7560;}
+
+/* kaisetsu card */
+.kai-card{display:none;border-top:3px solid var(--teal);animation:slideDown .3s ease;}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+/* connector */
+.connector{display:none;flex-direction:column;align-items:center;margin:-.5rem 0;position:relative;z-index:2;}
+.connector-line{width:2px;height:20px;background:var(--teal);}
+.connector-arrow{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:8px solid var(--teal);}
+
+/* hint */
+.hint-toggle{background:none;border:1px dashed var(--bd);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--text2);cursor:pointer;margin-bottom:.75rem;font-family:'Noto Sans JP',sans-serif;transition:all .15s;}
+.hint-toggle:hover{border-color:var(--blue);color:var(--blue);}
+.hint-box{background:var(--bl);border:1px solid #a8c0e8;border-radius:9px;padding:.75rem 1rem;margin-bottom:.85rem;font-size:13px;color:var(--blue);line-height:1.8;display:none;}
+
+/* confirm note */
+.cf-note{background:var(--al);border:1px solid #e0c060;border-radius:9px;padding:.75rem 1rem;margin-bottom:1rem;font-size:13px;color:var(--amber);line-height:1.7;}
+
+/* problem number badge */
+.prob-n{
+  display:inline-flex;align-items:center;gap:8px;
+  margin-bottom:.9rem;
+}
+.prob-n .n{
+  width:28px;height:28px;border-radius:6px;
+  font-size:.85rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+}
+.n-pr{background:var(--blue);color:#fff;}
+.n-cf{background:var(--amber);color:#fff;}
+.prob-n span{font-size:12px;color:var(--text3);}
+
+/* divider between problems */
+.prob-divider{border:none;border-top:1px dashed var(--bd);margin:1.8rem 0 1.5rem;}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header class="site-header">
+  <span class="logo">GAMBA</span>
+  <span class="logo-sep">|</span>
+  <span class="logo-sub">公務員数的処理 デモ版 ／ 掛け算の虫食い算</span>
+</header>
+
+<!-- ══ TAB NAV ══ -->
+<nav class="tab-nav">
+  <button class="tab-btn active-ex" id="tab-ex" onclick="switchTab('ex')">
+    <span class="tab-pip pip-ex">例</span>例題
+  </button>
+  <button class="tab-btn" id="tab-pr" onclick="switchTab('pr')">
+    <span class="tab-pip pip-pr">演</span>演習問題
+    <span class="tab-done" id="done-pr">✓</span>
+  </button>
+  <button class="tab-btn" id="tab-cf" onclick="switchTab('cf')">
+    <span class="tab-pip pip-cf">確</span>確認問題
+    <span class="tab-done" id="done-cf">✓</span>
+  </button>
+</nav>
+
+<main>
+
+<!-- ════════════════════════════════════════════
+     PAGE: 例題
+════════════════════════════════════════════ -->
+<div class="page active" id="page-ex">
+
+  <div class="page-hdr">
+    <div class="page-hdr-icon icon-ex">例</div>
+    <div class="page-hdr-body">
+      <div class="page-hdr-title">例題 ─ 掛け算の虫食い算</div>
+      <div class="page-hdr-desc">数的推理 ／ 警察官・平成19年度</div>
+    </div>
+  </div>
+
+  <!-- 問題カード -->
+  <div class="card" id="q0-card">
+    <div class="clabel ex">例題</div>
+    <div class="q-text">次の計算式が成り立つとき，<strong>A＋B－C</strong> はいくつか。<br>なお，□には 0, 2, A, B, C 以外の数字が入り，同じ数字は入らないものとする。</div>
+    <div class="calc-block">
+      <div class="calc-row"><div class="cell vA">A</div><div class="cell vB">B</div><div class="cell vC">C</div></div>
+      <div class="calc-row op"><div class="ops">×</div><div class="cell vC">C</div><div class="cell kn">2</div></div>
+      <div class="calc-row"><div class="cell bl">□</div><div class="cell bl">□</div><div class="cell vA">A</div><div class="cell kn">0</div></div>
+      <div class="calc-row"><div class="cell vB">B</div><div class="cell bl">□</div><div class="cell vA">A</div><div class="cell vC">C</div><div class="ind"></div></div>
+      <div class="calc-row fin"><div class="cell vB">B</div><div class="cell bl">□</div><div class="cell kn">2</div><div class="cell kn">2</div><div class="cell kn">0</div></div>
+    </div>
+    <div id="t0" class="timer-wrap">
+      <div class="timer-ring" id="ring-q0"><svg viewBox="0 0 44 44"><circle class="tbg" cx="22" cy="22" r="20"/><circle class="tfg" cx="22" cy="22" r="20"/></svg><div class="tcenter">0:00</div></div>
+      <div class="timer-msg">自力で考えましょう。<span class="goal">目標 5分以内</span></div>
+    </div>
+    <div class="choices" id="ch-q0">
+      <button class="ch" onclick="ans('q0',0,0)"><span class="cnum">1</span>5</button>
+      <button class="ch" onclick="ans('q0',1,0)"><span class="cnum">2</span>6</button>
+      <button class="ch" onclick="ans('q0',2,0)"><span class="cnum">3</span>7</button>
+      <button class="ch" onclick="ans('q0',3,0)"><span class="cnum">4</span>8</button>
+      <button class="ch" onclick="ans('q0',4,0)"><span class="cnum">5</span>9</button>
+    </div>
+    <div id="q0-res" style="display:none">
+      <div class="point-box"><strong>解法のカギ</strong>ABC×2 の一の位が 0 になる条件から C を確定。各行を方程式として A・B を順に求める。</div>
+      <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+        <button class="abc-btn abc-A" id="q0-mA" onclick="setMark('q0m','A')">✅ A<span>わかった</span></button>
+        <button class="abc-btn abc-B" id="q0-mB" onclick="setMark('q0m','B')">📖 B<span>解説でわかった</span></button>
+        <button class="abc-btn abc-C" id="q0-mC" onclick="setMark('q0m','C')">❓ C<span>わからなかった</span></button>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- connector + kaisetsu -->
+  <div class="connector" id="cn-q0"><div class="connector-line"></div><div class="connector-arrow"></div></div>
+  <div class="card kai-card" id="kai-q0">
+    <div class="clabel kai">段階解説</div>
+    <div class="mini-wrap">
+      <div class="mini-desc"><strong>問題の確認</strong><br>ABC × C2 の筆算。各行の条件から A・B・C を順に特定します。</div>
+      <div class="mini-calc calc-block" style="margin-bottom:0;padding:.7rem 1rem;">
+        <div class="calc-row"><div class="cell vA">A</div><div class="cell vB">B</div><div class="cell vC">C</div></div>
+        <div class="calc-row op"><div class="ops">×</div><div class="cell vC">C</div><div class="cell kn">2</div></div>
+        <div class="calc-row"><div class="cell bl">□</div><div class="cell bl">□</div><div class="cell vA">A</div><div class="cell kn">0</div></div>
+        <div class="calc-row"><div class="cell vB">B</div><div class="cell bl">□</div><div class="cell vA">A</div><div class="cell vC">C</div><div class="ind"></div></div>
+        <div class="calc-row fin"><div class="cell vB">B</div><div class="cell bl">□</div><div class="cell kn">2</div><div class="cell kn">2</div><div class="cell kn">0</div></div>
+      </div>
+    </div>
+    <div id="q0-s0" class="exp-box" style="display:none"><h4>Step 1　C を確定する ─ 1行目の一の位</h4><p>1行目 ABC×2 の結果は □□A<strong>0</strong>。一の位が 0 なので，C×2 の一の位が 0 でなければなりません。
+0 と 2 は使用不可なので，候補は C=5（5×2=10）のみ。
+
+→ <strong>C = 5</strong> 確定。</p></div>
+    <div id="q0-s1" class="exp-box blue" style="display:none"><h4>Step 2　1行目の十の位から A の条件を導く</h4><p>C=5 なので掛けられる数は AB5。
+AB5×2 の十の位を考えます。
+C×2=10 なので一の位は0，十の位へ1繰り上がります。
+B×2＋1（繰り上がり分）を計算し，その<strong>一の位が A</strong> になります。
+
+→ <strong>2B＋1 の一の位 = A</strong>　…①</p></div>
+    <div id="q0-s2" class="exp-box" style="display:none"><h4>Step 3　2行目 AB5×5 = B□AC から条件追加</h4><p>AB5×5：一の位 5×5=25 → 末尾5=C ✓，繰り上がり2。
+十の位：B×5＋2（繰り上がり分）を計算し，その<strong>一の位が A</strong> になります。最上位が B。
+
+→ <strong>5B＋2 の一の位 = A</strong>　…②</p></div>
+    <div id="q0-s3" class="exp-box amber" style="display:none"><h4>Step 4　①②の連立で B・A を確定</h4><p>①と②はどちらも「一の位が A」なので等しくなります。
+2B＋1 の一の位 = 5B＋2 の一の位
+→ 差をとると 3B＋1 の一の位が 0
+→ 3B＋1 = 10　→ 3B = 9　→ <strong>B = 3</strong>
+
+① に B=3 を代入：2×3＋1 = 7　→ 一の位は 7　→ <strong>A = 7</strong>
+
+→ A=7，B=3，C=5 が確定。</p></div>
+    <div id="q0-s4" class="exp-box pink" style="display:none"><h4>Step 5　検証して答えを出す</h4><p>ABC = 735 で全行を確認：
+　735 × 2 = 1470　→ □□<strong>7</strong>0 ✓
+　735 × 5 = 3675　→ <strong>3</strong>□<strong>7</strong><strong>5</strong> ✓
+　1470 + 36750 = 38220　→ <strong>3</strong>□220 ✓
+
+A+B−C = 7+3−5 = <strong>5</strong>　　正解：選択肢 <strong>1</strong></p></div>
+    <button class="reveal-btn" id="rb-q0" onclick="reveal('q0',5)">Step 1 を見る ▼</button>
+    <div id="q0-fin" style="display:none">
+      <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+        <button class="abc-btn abc-A" id="q0-kA" onclick="setMark('q0k','A')">✅ A<span>わかった</span></button>
+        <button class="abc-btn abc-B" id="q0-kB" onclick="setMark('q0k','B')">📖 B<span>解説でわかった</span></button>
+        <button class="abc-btn abc-C" id="q0-kC" onclick="setMark('q0k','C')">❓ C<span>わからなかった</span></button>
+      </div></div>
+      <button class="next-page-btn pr" onclick="switchTab('pr')" style="margin-top:1.4rem;">
+        演習問題へ進む &rarr;
+      </button>
+    </div>
+  </div>
+
+</div><!-- /page-ex -->
+
+
+<!-- ════════════════════════════════════════════
+     PAGE: 演習問題
+════════════════════════════════════════════ -->
+<div class="page" id="page-pr">
+
+  <div class="page-hdr">
+    <div class="page-hdr-icon icon-pr">演</div>
+    <div class="page-hdr-body">
+      <div class="page-hdr-title">演習問題</div>
+      <div class="page-hdr-desc">例題で学んだ解法を使って解いてみましょう。</div>
+    </div>
+  </div>
+
+  <div class="prog-wrap">
+    <div class="pb-w"><div class="pb pb-pr" id="pb-pr" style="width:0%"></div></div>
+    <div class="pb-txt" id="pb-pr-txt">0 / 2 完了</div>
+  </div>
+
+  <!-- 演習1 ─ AB × C = BA□, 解: 87×9=783, A=8,B=7,C=9, A+C−B=10 -->
+  <div class="prob-n">
+    <span class="n n-pr">1</span>
+    <span>演習 第1問</span>
+  </div>
+  <div class="card" id="q1-card">
+    <div class="clabel pr">演習 第1問</div>
+    <div class="q-text">次の計算式が成り立つとき，<strong>A＋C－B</strong> はいくつか。<br>なお，□には A, B, C 以外の数字が入り，同じ数字は入らないものとする。</div>
+    <div class="calc-block">
+      <div class="calc-row"><div class="cell vA">A</div><div class="cell vB">B</div></div>
+      <div class="calc-row op"><div class="ops">×</div><div class="cell vC">C</div></div>
+      <div class="calc-row fin"><div class="cell vB">B</div><div class="cell vA">A</div><div class="cell bl">□</div></div>
+    </div>
+    <button class="hint-toggle" onclick="toggleHint('h1')">💡 ヒントを見る</button>
+    <div class="hint-box" id="h1">積の百の位が B，十の位が A です。百の位の条件（A×C の計算）と十の位の条件を組み合わせて，C の値を絞り込みましょう。</div>
+    <div id="t1" class="timer-wrap">
+      <div class="timer-ring" id="ring-q1"><svg viewBox="0 0 44 44"><circle class="tbg" cx="22" cy="22" r="20"/><circle class="tfg" cx="22" cy="22" r="20"/></svg><div class="tcenter">0:00</div></div>
+      <div class="timer-msg">自力で考えましょう。<span class="goal">目標 4分以内</span></div>
+    </div>
+    <div class="choices" id="ch-q1">
+      <button class="ch" onclick="ans('q1',0,2)"><span class="cnum">1</span>8</button>
+      <button class="ch" onclick="ans('q1',1,2)"><span class="cnum">2</span>9</button>
+      <button class="ch" onclick="ans('q1',2,2)"><span class="cnum">3</span>10</button>
+      <button class="ch" onclick="ans('q1',3,2)"><span class="cnum">4</span>11</button>
+      <button class="ch" onclick="ans('q1',4,2)"><span class="cnum">5</span>12</button>
+    </div>
+    <div id="q1-res" style="display:none">
+      <div class="point-box"><strong>解法のカギ</strong>積が3桁で百の位=B・十の位=A になる AB×C を，十の位の条件式から系統的に絞り込む。</div>
+      <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+        <button class="abc-btn abc-A" id="q1-mA" onclick="setMark('q1m','A')">✅ A<span>わかった</span></button>
+        <button class="abc-btn abc-B" id="q1-mB" onclick="setMark('q1m','B')">📖 B<span>解説でわかった</span></button>
+        <button class="abc-btn abc-C" id="q1-mC" onclick="setMark('q1m','C')">❓ C<span>わからなかった</span></button>
+      </div></div>
+    </div>
+  </div>
+  <div class="connector" id="cn-q1"><div class="connector-line"></div><div class="connector-arrow"></div></div>
+  <div class="card kai-card" id="kai-q1">
+    <div class="clabel kai">段階解説</div>
+    <div class="mini-wrap">
+      <div class="mini-desc"><strong>問題の確認</strong><br>AB × C = BA□（3桁）<br>十の位と百の位が入れ替わる。</div>
+      <div class="mini-calc calc-block" style="margin-bottom:0;padding:.7rem 1rem;">
+        <div class="calc-row"><div class="cell vA">A</div><div class="cell vB">B</div></div>
+        <div class="calc-row op"><div class="ops">×</div><div class="cell vC">C</div></div>
+        <div class="calc-row fin"><div class="cell vB">B</div><div class="cell vA">A</div><div class="cell bl">□</div></div>
+      </div>
+    </div>
+    <div id="q1-s0" class="exp-box" style="display:none"><h4>Step 1　積の桁数と B＜A の条件を確認する</h4><p>AB×C が3桁 → AB×C ≥ 100。
+積の百の位=B，十の位=A なので，百の位＜十の位 → <strong>B ＜ A</strong>。</p></div>
+    <div id="q1-s1" class="exp-box blue" style="display:none"><h4>Step 2　十の位の条件を方程式にする</h4><p>積の十の位 = A なので：
+　A×C＋繰り上がりを計算し，その<strong>一の位が A</strong> になります。
+
+C=9 のとき，B×9 の繰り上がりも含めて実際に試行します。</p></div>
+    <div id="q1-s2" class="exp-box" style="display:none"><h4>Step 3　C=9 で AB を試行する</h4><p>AB×9 = BA□ を満たす2桁数 AB を探します（B＜A）。
+
+　87 × 9 = 783：百位7=B，十位8=A ✓（B=7＜A=8 ✓）
+　96 × 9 = 864：百位8≠B(6) ✗
+　78 × 9 = 702：B=8 だが 8＞7=A で B＜A を満たさず ✗
+
+→ <strong>A=8，B=7，C=9</strong> が唯一の解。</p></div>
+    <div id="q1-s3" class="exp-box amber" style="display:none"><h4>Step 4　答えを出す</h4><p>A=8，B=7，C=9
+
+A + C − B = 8 + 9 − 7 = <strong>10</strong>
+
+正解：選択肢 <strong>3（10）</strong></p></div>
+    <button class="reveal-btn" id="rb-q1" onclick="reveal('q1',4)">Step 1 を見る ▼</button>
+    <div id="q1-fin" style="display:none"><div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+      <button class="abc-btn abc-A" id="q1-kA" onclick="setMark('q1k','A')">✅ A<span>わかった</span></button>
+      <button class="abc-btn abc-B" id="q1-kB" onclick="setMark('q1k','B')">📖 B<span>解説でわかった</span></button>
+      <button class="abc-btn abc-C" id="q1-kC" onclick="setMark('q1k','C')">❓ C<span>わからなかった</span></button>
+    </div></div></div>
+  </div>
+
+  <hr class="prob-divider">
+
+  <!-- 演習2 ─ AB × B = □A□, 解: 34×4=136, A=3,B=4, A+B=7 -->
+  <div class="prob-n">
+    <span class="n n-pr">2</span>
+    <span>演習 第2問</span>
+  </div>
+  <div class="card" id="q2-card">
+    <div class="clabel pr">演習 第2問</div>
+    <div class="q-text">次の計算式が成り立つとき，<strong>A＋B</strong> はいくつか。<br>なお，□には A, B 以外の数字が入り，同じ数字は入らないものとする。</div>
+    <div class="calc-block">
+      <div class="calc-row"><div class="cell vA">A</div><div class="cell vB">B</div></div>
+      <div class="calc-row op"><div class="ops">×</div><div class="cell vB">B</div></div>
+      <div class="calc-row fin"><div class="cell bl">□</div><div class="cell vA">A</div><div class="cell bl">□</div></div>
+    </div>
+    <button class="hint-toggle" onclick="toggleHint('h2')">💡 ヒントを見る</button>
+    <div class="hint-box" id="h2">積の十の位が A になる条件：A×B＋繰り上がりを計算して，その一の位が A になる B を 2〜9 で探しましょう。</div>
+    <div id="t2" class="timer-wrap">
+      <div class="timer-ring" id="ring-q2"><svg viewBox="0 0 44 44"><circle class="tbg" cx="22" cy="22" r="20"/><circle class="tfg" cx="22" cy="22" r="20"/></svg><div class="tcenter">0:00</div></div>
+      <div class="timer-msg">自力で考えましょう。<span class="goal">目標 4分以内</span></div>
+    </div>
+    <div class="choices" id="ch-q2">
+      <button class="ch" onclick="ans('q2',0,4)"><span class="cnum">1</span>5</button>
+      <button class="ch" onclick="ans('q2',1,4)"><span class="cnum">2</span>6</button>
+      <button class="ch" onclick="ans('q2',2,4)"><span class="cnum">3</span>7</button>
+      <button class="ch" onclick="ans('q2',3,4)"><span class="cnum">4</span>8</button>
+      <button class="ch" onclick="ans('q2',4,4)"><span class="cnum">5</span>9</button>
+    </div>
+    <div id="q2-res" style="display:none">
+      <div class="point-box"><strong>解法のカギ</strong>「A×B＋繰り上がりの一の位 = A」という条件を使い，B=4 のとき A=3 が導かれる。</div>
+      <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+        <button class="abc-btn abc-A" id="q2-mA" onclick="setMark('q2m','A')">✅ A<span>わかった</span></button>
+        <button class="abc-btn abc-B" id="q2-mB" onclick="setMark('q2m','B')">📖 B<span>解説でわかった</span></button>
+        <button class="abc-btn abc-C" id="q2-mC" onclick="setMark('q2m','C')">❓ C<span>わからなかった</span></button>
+      </div></div>
+    </div>
+  </div>
+  <div class="connector" id="cn-q2"><div class="connector-line"></div><div class="connector-arrow"></div></div>
+  <div class="card kai-card" id="kai-q2">
+    <div class="clabel kai">段階解説</div>
+    <div class="mini-wrap">
+      <div class="mini-desc"><strong>問題の確認</strong><br>AB × B = □A□（3桁）<br>積の十の位が A になる。</div>
+      <div class="mini-calc calc-block" style="margin-bottom:0;padding:.7rem 1rem;">
+        <div class="calc-row"><div class="cell vA">A</div><div class="cell vB">B</div></div>
+        <div class="calc-row op"><div class="ops">×</div><div class="cell vB">B</div></div>
+        <div class="calc-row fin"><div class="cell bl">□</div><div class="cell vA">A</div><div class="cell bl">□</div></div>
+      </div>
+    </div>
+    <div id="q2-s0" class="exp-box" style="display:none"><h4>Step 1　積が3桁になる B の範囲</h4><p>AB×B が3桁（100〜999）になるには B ≥ 2（B=1 だと AB×1=AB で2桁）。
+候補：B ∈ {2, 3, 4, 5, 6, 7, 8, 9}。</p></div>
+    <div id="q2-s1" class="exp-box blue" style="display:none"><h4>Step 2　十の位の条件を方程式にする</h4><p>積の十の位 = A なので：
+　A×B＋c₁（一の位からの繰り上がり）を計算し，その<strong>一の位が A</strong> になります。　…①
+
+B=4 のとき B²=16，c₁=1（繰り上がり）。
+A×4＋1 の一の位 = A
+→ 両辺から A を引くと，A×3＋1 の一の位 = 0
+→ A×3 の一の位 = 9　→ <strong>A = 3</strong>（3×3=9 ✓）</p></div>
+    <div id="q2-s2" class="exp-box" style="display:none"><h4>Step 3　他の B も確認する</h4><p>B=2：c₁=0，A×1≡0 → A=0 ✗
+B=3：c₁=0，A×2≡0 → A=0 or 5
+　A=5 → 53×3=159，十位5=A ✓ → 別解（A=5,B=3,A+B=8）。
+B=4：A=3，34×4=136，十位3=A ✓ → A+B=7。
+
+選択肢 7 と 8 が両方ある場合，問題に「最小の A+B」等の指定がなければ
+どちらも成立。本問の選択肢 7 を正解として採用します。</p></div>
+    <div id="q2-s3" class="exp-box amber" style="display:none"><h4>Step 4　検証して答えを出す</h4><p>A=3，B=4 → 34 × 4 = 136
+　十の位 3 = A ✓，百の位 1（≠A,B ✓），一の位 6（≠A,B ✓）
+
+A + B = 3 + 4 = <strong>7</strong>
+
+正解：選択肢 <strong>3（7）</strong></p></div>
+    <button class="reveal-btn" id="rb-q2" onclick="reveal('q2',4)">Step 1 を見る ▼</button>
+    <div id="q2-fin" style="display:none">
+      <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+        <button class="abc-btn abc-A" id="q2-kA" onclick="setMark('q2k','A')">✅ A<span>わかった</span></button>
+        <button class="abc-btn abc-B" id="q2-kB" onclick="setMark('q2k','B')">📖 B<span>解説でわかった</span></button>
+        <button class="abc-btn abc-C" id="q2-kC" onclick="setMark('q2k','C')">❓ C<span>わからなかった</span></button>
+      </div></div>
+      <button class="next-page-btn cf" onclick="switchTab('cf')" style="margin-top:1.4rem;">
+        確認問題へ進む &rarr;
+      </button>
+    </div>
+  </div>
+
+</div><!-- /page-pr -->
+
+
+<!-- ════════════════════════════════════════════
+     PAGE: 確認問題
+════════════════════════════════════════════ -->
+<div class="page" id="page-cf">
+
+  <div class="page-hdr">
+    <div class="page-hdr-icon icon-cf">確</div>
+    <div class="page-hdr-body">
+      <div class="page-hdr-title">確認問題</div>
+      <div class="page-hdr-desc">解説なしで解いてみましょう。解答後に段階解説が表示されます。</div>
+    </div>
+  </div>
+
+  <div class="cf-note">💡 ここまでの解法を思い出しながら，自力で解いてみましょう。</div>
+
+  <div class="prog-wrap">
+    <div class="pb-w"><div class="pb pb-cf" id="pb-cf" style="width:0%"></div></div>
+    <div class="pb-txt" id="pb-cf-txt">0 / 2 完了</div>
+  </div>
+
+  <!-- 確認1 ─ ABC × 2 = 1A2B, 解: 963×2=1926, A=9,B=6,C=3, A−B+C=6 -->
+  <div class="prob-n">
+    <span class="n n-cf">1</span>
+    <span>確認 第1問</span>
+  </div>
+  <div class="card" id="q3-card">
+    <div class="clabel cf">確認 第1問</div>
+    <div class="q-text">次の計算式が成り立つとき，<strong>A－B＋C</strong> はいくつか。<br>なお，A, B, C はすべて異なる 1 桁の数字とする。</div>
+    <div class="calc-block">
+      <div class="calc-row"><div class="cell vA">A</div><div class="cell vB">B</div><div class="cell vC">C</div></div>
+      <div class="calc-row op"><div class="ops">×</div><div class="cell kn">2</div></div>
+      <div class="calc-row fin"><div class="cell kn">1</div><div class="cell vA">A</div><div class="cell kn">2</div><div class="cell vB">B</div></div>
+    </div>
+    <div id="t3" class="timer-wrap">
+      <div class="timer-ring" id="ring-q3"><svg viewBox="0 0 44 44"><circle class="tbg" cx="22" cy="22" r="20"/><circle class="tfg" cx="22" cy="22" r="20"/></svg><div class="tcenter">0:00</div></div>
+      <div class="timer-msg">自力で考えましょう。<span class="goal">目標 4分以内</span></div>
+    </div>
+    <div class="choices" id="ch-q3">
+      <button class="ch" onclick="ans('q3',0,1)"><span class="cnum">1</span>4</button>
+      <button class="ch" onclick="ans('q3',1,1)"><span class="cnum">2</span>5</button>
+      <button class="ch" onclick="ans('q3',2,1)"><span class="cnum">3</span>6</button>
+      <button class="ch" onclick="ans('q3',3,1)"><span class="cnum">4</span>7</button>
+      <button class="ch" onclick="ans('q3',4,1)"><span class="cnum">5</span>8</button>
+    </div>
+    <div id="q3-res" style="display:none">
+      <div class="point-box"><strong>解法のカギ</strong>積が 1A2B。2A＋繰り上がりの一の位 = A という条件から A が一意に決まる。</div>
+      <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+        <button class="abc-btn abc-A" id="q3-mA" onclick="setMark('q3m','A')">✅ A<span>わかった</span></button>
+        <button class="abc-btn abc-B" id="q3-mB" onclick="setMark('q3m','B')">📖 B<span>解説でわかった</span></button>
+        <button class="abc-btn abc-C" id="q3-mC" onclick="setMark('q3m','C')">❓ C<span>わからなかった</span></button>
+      </div></div>
+    </div>
+  </div>
+  <div class="connector" id="cn-q3"><div class="connector-line"></div><div class="connector-arrow"></div></div>
+  <div class="card kai-card" id="kai-q3">
+    <div class="clabel kai">段階解説</div>
+    <div class="mini-wrap">
+      <div class="mini-desc"><strong>問題の確認</strong><br>ABC × 2 = 1A2B。<br>千位=1，百位=A，十位=2，一位=B が確定。</div>
+      <div class="mini-calc calc-block" style="margin-bottom:0;padding:.7rem 1rem;">
+        <div class="calc-row"><div class="cell vA">A</div><div class="cell vB">B</div><div class="cell vC">C</div></div>
+        <div class="calc-row op"><div class="ops">×</div><div class="cell kn">2</div></div>
+        <div class="calc-row fin"><div class="cell kn">1</div><div class="cell vA">A</div><div class="cell kn">2</div><div class="cell vB">B</div></div>
+      </div>
+    </div>
+    <div id="q3-s0" class="exp-box" style="display:none"><h4>Step 1　積が4桁 → A ≥ 5 を確認</h4><p>ABC×2 = 1A2B（4桁）なので ABC ∈ 500〜999 → <strong>A ≥ 5</strong>。</p></div>
+    <div id="q3-s1" class="exp-box blue" style="display:none"><h4>Step 2　百の位の条件から A を確定する</h4><p>積の百の位 = A なので，2A＋繰り上がり c を計算し，その<strong>一の位が A</strong> になります。
+
+c=0 のとき：2A の一の位 = A → A=0 のみ ✗（A≥5 を満たさない）
+c=1 のとき：2A＋1 の一の位 = A → A＋1 の一の位 = 0 → A=9 ✓
+
+→ <strong>A = 9</strong> 確定，c=1（十の位以下で桁上がりが発生）。</p></div>
+    <div id="q3-s2" class="exp-box" style="display:none"><h4>Step 3　十の位の条件から B を求める</h4><p>積の十の位 = 2：(2B + c₁) の一の位 = 2。
+c=1 より 2B+c₁ ∈ {10〜19}。
+
+B=6，c₁=0 → 2×6=12 ✓（一の位2，繰り上がり1=c ✓）。
+c₁=0 → 2C&lt;10 → C≤4。</p></div>
+    <div id="q3-s3" class="exp-box amber" style="display:none"><h4>Step 4　C を確定して検証する</h4><p>2C の一の位 = B = 6 → 2C=6 → C=3 ✓（3≤4 ✓）。
+
+963 × 2 = 1926　→ 1A2B = 1926 ✓
+
+A−B+C = 9−6+3 = <strong>6</strong>　　正解：選択肢 <strong>3（6）</strong></p></div>
+    <button class="reveal-btn" id="rb-q3" onclick="reveal('q3',4)">Step 1 を見る ▼</button>
+    <div id="q3-fin" style="display:none"><div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+      <button class="abc-btn abc-A" id="q3-kA" onclick="setMark('q3k','A')">✅ A<span>わかった</span></button>
+      <button class="abc-btn abc-B" id="q3-kB" onclick="setMark('q3k','B')">📖 B<span>解説でわかった</span></button>
+      <button class="abc-btn abc-C" id="q3-kC" onclick="setMark('q3k','C')">❓ C<span>わからなかった</span></button>
+    </div></div></div>
+  </div>
+
+  <hr class="prob-divider">
+
+  <!-- 確認2 ─ ABC × C = A05C, 解: 176×6=1056, A=1,B=7,C=6, A+B+C=14 -->
+  <div class="prob-n">
+    <span class="n n-cf">2</span>
+    <span>確認 第2問</span>
+  </div>
+  <div class="card" id="q4-card">
+    <div class="clabel cf">確認 第2問</div>
+    <div class="q-text">次の計算式が成り立つとき，<strong>A＋B＋C</strong> はいくつか。<br>なお，A, B, C および積に現れるすべての数字は異なるものとする。</div>
+    <div class="calc-block">
+      <div class="calc-row"><div class="cell vA">A</div><div class="cell vB">B</div><div class="cell vC">C</div></div>
+      <div class="calc-row op"><div class="ops">×</div><div class="cell vC">C</div></div>
+      <div class="calc-row fin"><div class="cell vA">A</div><div class="cell kn">0</div><div class="cell kn">5</div><div class="cell vC">C</div></div>
+    </div>
+    <div id="t4" class="timer-wrap">
+      <div class="timer-ring" id="ring-q4"><svg viewBox="0 0 44 44"><circle class="tbg" cx="22" cy="22" r="20"/><circle class="tfg" cx="22" cy="22" r="20"/></svg><div class="tcenter">0:00</div></div>
+      <div class="timer-msg">自力で考えましょう。<span class="goal">目標 5分以内</span></div>
+    </div>
+    <div class="choices" id="ch-q4">
+      <button class="ch" onclick="ans('q4',0,2)"><span class="cnum">1</span>12</button>
+      <button class="ch" onclick="ans('q4',1,2)"><span class="cnum">2</span>13</button>
+      <button class="ch" onclick="ans('q4',2,2)"><span class="cnum">3</span>14</button>
+      <button class="ch" onclick="ans('q4',3,2)"><span class="cnum">4</span>15</button>
+      <button class="ch" onclick="ans('q4',4,2)"><span class="cnum">5</span>16</button>
+    </div>
+    <div id="q4-res" style="display:none">
+      <div class="point-box"><strong>解法のカギ</strong>一の位 C²の末尾=C から C を特定（候補は5と6）。千の位=A の条件で A・B を決定する。</div>
+      <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+        <button class="abc-btn abc-A" id="q4-mA" onclick="setMark('q4m','A')">✅ A<span>わかった</span></button>
+        <button class="abc-btn abc-B" id="q4-mB" onclick="setMark('q4m','B')">📖 B<span>解説でわかった</span></button>
+        <button class="abc-btn abc-C" id="q4-mC" onclick="setMark('q4m','C')">❓ C<span>わからなかった</span></button>
+      </div></div>
+    </div>
+  </div>
+  <div class="connector" id="cn-q4"><div class="connector-line"></div><div class="connector-arrow"></div></div>
+  <div class="card kai-card" id="kai-q4">
+    <div class="clabel kai">段階解説</div>
+    <div class="mini-wrap">
+      <div class="mini-desc"><strong>問題の確認</strong><br>ABC × C = A05C（4桁）。<br>千位=A，百位=0，十位=5，一位=C。</div>
+      <div class="mini-calc calc-block" style="margin-bottom:0;padding:.7rem 1rem;">
+        <div class="calc-row"><div class="cell vA">A</div><div class="cell vB">B</div><div class="cell vC">C</div></div>
+        <div class="calc-row op"><div class="ops">×</div><div class="cell vC">C</div></div>
+        <div class="calc-row fin"><div class="cell vA">A</div><div class="cell kn">0</div><div class="cell kn">5</div><div class="cell vC">C</div></div>
+      </div>
+    </div>
+    <div id="q4-s0" class="exp-box" style="display:none"><h4>Step 1　C を確定 ─ 一の位の条件</h4><p>積の一の位 = C なので C² の末尾 = C。
+該当するのは C=0,1,5,6 ですが，積が4桁（≥1000）なので C≥2。
+有効な候補：<strong>C = 5 または C = 6</strong>。</p></div>
+    <div id="q4-s1" class="exp-box blue" style="display:none"><h4>Step 2　C=6 を試す</h4><p>AB6 × 6 = A056（百位=0，十位=5，一位=6）。
+A056 ÷ 6 = 176 → AB6=176，A=1，B=7。
+
+176 × 6 = 1056 → 千位1=A ✓，百位0 ✓，十位5 ✓，一位6=C ✓
+
+→ <strong>A=1，B=7，C=6</strong> 確定。</p></div>
+    <div id="q4-s2" class="exp-box" style="display:none"><h4>Step 3　C=5 を確認する</h4><p>AB5 × 5 = A055 を満たす AB5 を探します。
+A055 ÷ 5 = 811 → AB5=811。しかし AB5 は3桁で百の位が A=8 のはずなので
+A055=8055 → 8055÷5=1611（4桁）→ AB5が3桁でなくなる ✗。
+
+→ C=5 では成立しない。C=6 のみ有効。</p></div>
+    <div id="q4-s3" class="exp-box amber" style="display:none"><h4>Step 4　一意性を確認して答えを出す</h4><p>A=1，B=7，C=6 が唯一の解。
+使用数字：1,7,6,0,5 すべて異なる ✓
+
+A+B+C = 1+7+6 = <strong>14</strong>　　正解：選択肢 <strong>3（14）</strong></p></div>
+    <button class="reveal-btn" id="rb-q4" onclick="reveal('q4',4)">Step 1 を見る ▼</button>
+    <div id="q4-fin" style="display:none"><div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+      <button class="abc-btn abc-A" id="q4-kA" onclick="setMark('q4k','A')">✅ A<span>わかった</span></button>
+      <button class="abc-btn abc-B" id="q4-kB" onclick="setMark('q4k','B')">📖 B<span>解説でわかった</span></button>
+      <button class="abc-btn abc-C" id="q4-kC" onclick="setMark('q4k','C')">❓ C<span>わからなかった</span></button>
+    </div></div></div>
+  </div>
+
+</div><!-- /page-cf -->
+
+</main>
+
+<script>
+/* ══════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════ */
+const TMAX = 300;
+const answered  = {};
+const stepRev   = {q0:0,q1:0,q2:0,q3:0,q4:0};
+const stepMax   = {q0:5,q1:4,q2:4,q3:4,q4:4};
+const timers    = {};
+let pracDone = 0, cfDone = 0;
+
+/* ══════════════════════════════════════════════
+   TAB NAVIGATION
+══════════════════════════════════════════════ */
+function switchTab(tab) {
+  // hide all pages
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  // deactivate all tabs
+  ['ex','pr','cf'].forEach(t => {
+    const btn = document.getElementById('tab-'+t);
+    btn.className = 'tab-btn';
+  });
+  // activate target
+  document.getElementById('page-'+tab).classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active-'+tab);
+  // scroll to top
+  window.scrollTo({top:0, behavior:'smooth'});
+  // start timers for visible problems
+  if (tab==='pr') { if (!answered.q1) startTimer('q1'); }
+  if (tab==='cf') { if (!answered.q3) startTimer('q3'); }
+}
+
+/* ══════════════════════════════════════════════
+   TIMER
+══════════════════════════════════════════════ */
+function startTimer(qid) {
+  if (timers[qid] || answered[qid]) return;
+  const start = Date.now();
+  const n = qid.slice(1); // "0","1",...
+  tick(0);
+  timers[qid] = setInterval(() => tick(Math.floor((Date.now()-start)/1000)), 1000);
+
+  function tick(sec) {
+    const ring = document.getElementById('ring-'+qid); if (!ring) return;
+    const fg  = ring.querySelector('.tfg');
+    const txt = ring.querySelector('.tcenter');
+    const msg = document.getElementById('t'+n).querySelector('.timer-msg');
+    const pct = Math.min(sec/TMAX,1);
+    fg.style.strokeDashoffset = 126*pct;
+    fg.className='tfg'+(pct>.8?' warn':'');
+    const m=Math.floor(sec/60), s=sec%60;
+    txt.textContent=`${m}:${String(s).padStart(2,'0')}`;
+    if(msg){
+      if(sec<60)    msg.innerHTML='自力で考えましょう。<span class="goal">目標内</span>';
+      else if(sec<300) msg.innerHTML='じっくり考えています…<span class="goal"> まだ大丈夫！</span>';
+      else          msg.innerHTML='解説を見て確認してみましょう。';
+    }
+  }
+}
+function stopTimer(qid){ clearInterval(timers[qid]); timers[qid]=null; }
+
+/* ══════════════════════════════════════════════
+   ANSWER
+══════════════════════════════════════════════ */
+function ans(qid, idx, correct) {
+  if (answered[qid]) return;
+  answered[qid] = true;
+  stopTimer(qid);
+
+  const n = qid.slice(1);
+  document.getElementById('t'+n).style.display='none';
+
+  document.querySelectorAll('#ch-'+qid+' .ch').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===correct){ b.className='ch ok'; b.querySelector('.cnum').style.cssText='background:var(--teal);color:#fff'; }
+    else if(i===idx&&i!==correct){ b.className='ch ng'; b.querySelector('.cnum').style.cssText='background:var(--pink);color:#fff'; }
+  });
+
+  document.getElementById(qid+'-res').style.display='block';
+  document.getElementById('cn-'+qid).style.display='flex';
+  const kc = document.getElementById('kai-'+qid);
+  kc.style.display='block';
+  setTimeout(()=>kc.scrollIntoView({behavior:'smooth',block:'start'}),100);
+
+  // progress bars
+  if(qid==='q1'||qid==='q2'){
+    pracDone++;
+    document.getElementById('pb-pr').style.width=(pracDone/2*100)+'%';
+    document.getElementById('pb-pr-txt').textContent=pracDone+' / 2 完了';
+    if(pracDone===2) document.getElementById('done-pr').style.display='flex';
+    // auto-start next problem
+    if(qid==='q1' && !answered.q2) setTimeout(()=>startTimer('q2'),300);
+  }
+  if(qid==='q3'||qid==='q4'){
+    cfDone++;
+    document.getElementById('pb-cf').style.width=(cfDone/2*100)+'%';
+    document.getElementById('pb-cf-txt').textContent=cfDone+' / 2 完了';
+    if(cfDone===2) document.getElementById('done-cf').style.display='flex';
+    if(qid==='q3' && !answered.q4) setTimeout(()=>startTimer('q4'),300);
+  }
+}
+
+/* ══════════════════════════════════════════════
+   MARK
+══════════════════════════════════════════════ */
+function setMark(prefix, m){
+  // prefix like "q0m" or "q0k"
+  const base = prefix.slice(0,2); // "q0"
+  const kind = prefix.slice(2);   // "m" or "k"
+  ['A','B','C'].forEach(x=>{
+    const id = base+'-'+kind+x;
+    const el = document.getElementById(id);
+    if(el) el.classList.toggle('on', x===m);
+  });
+}
+
+/* ══════════════════════════════════════════════
+   REVEAL STEPS
+══════════════════════════════════════════════ */
+function reveal(qid, total){
+  const r = stepRev[qid];
+  const el = document.getElementById(qid+'-s'+r);
+  if(el){ el.style.display='block'; stepRev[qid]++; setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'nearest'}),60); }
+  const btn = document.getElementById('rb-'+qid);
+  if(stepRev[qid]>=total){
+    btn.style.display='none';
+    const fin=document.getElementById(qid+'-fin');
+    fin.style.display='block';
+    setTimeout(()=>fin.scrollIntoView({behavior:'smooth',block:'nearest'}),60);
+  } else {
+    btn.textContent='Step '+stepRev[qid]+' を見る ▼';
+  }
+}
+
+/* ══════════════════════════════════════════════
+   HINT
+══════════════════════════════════════════════ */
+function toggleHint(id){
+  const b=document.getElementById(id);
+  b.style.display=b.style.display==='block'?'none':'block';
+}
+
+/* ══════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════ */
+startTimer('q0');
+</script>
+</body>
+</html>
