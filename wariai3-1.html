@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAMBAシステム｜割合③-1　比の基本・比例式の利用</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f4ef;--sf:#fff;--sf2:#f0ede6;--bd:#d6d2c8;--bd2:#bcb8ae;--pink:#d93652;--teal:#0d9478;--blue:#2055b0;--amber:#a86000;--tl:#e6f5f1;--bl:#eaf0fb;--al:#fdf2dd;--pl:#fde8eb;--text:#1a1814;--text2:#58544c;--text3:#98948c;--r:12px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;min-height:100vh;}
+.site-header{background:var(--sf);border-bottom:1px solid var(--bd);padding:.65rem 1.5rem;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;}
+.logo{font-family:'Shippori Mincho',serif;font-size:1.05rem;color:var(--pink);}
+.logo-sep{color:var(--bd2);margin:0 4px;}
+.logo-sub{font-size:12px;color:var(--text2);}
+.back-bar{background:var(--sf2);border-bottom:1px solid var(--bd);padding:.5rem 1.5rem;display:flex;align-items:center;gap:8px;}
+.back-btn{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:500;color:var(--blue);text-decoration:none;padding:5px 14px;border:1.5px solid var(--blue);border-radius:20px;background:var(--bl);transition:all .15s;}
+.back-btn:hover{background:var(--blue);color:#fff;}
+.unit-badge{font-size:12px;color:var(--text3);margin-left:auto;background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:3px 10px;}
+.tab-nav{background:var(--sf);border-bottom:2px solid var(--bd);position:sticky;top:83px;z-index:99;display:flex;padding:0 1rem;}
+.tab-btn{padding:.7rem 1.4rem;font-size:13px;font-weight:500;color:var(--text2);background:none;border:none;cursor:pointer;font-family:'Noto Sans JP',sans-serif;display:flex;align-items:center;gap:7px;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .15s;white-space:nowrap;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active-ex{color:var(--pink);border-bottom-color:var(--pink);}
+.tab-btn.active-pr{color:var(--blue);border-bottom-color:var(--blue);}
+.tab-btn.active-cf{color:var(--amber);border-bottom-color:var(--amber);}
+.tab-pip{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;}
+.pip-ex{background:#fde8eb;color:var(--pink);}
+.pip-pr{background:var(--bl);color:var(--blue);}
+.pip-cf{background:var(--al);color:var(--amber);}
+.tab-done{width:16px;height:16px;border-radius:50%;background:var(--teal);color:#fff;font-size:9px;display:none;align-items:center;justify-content:center;}
+.page{display:none;animation:fadeTab .2s ease;}
+.page.active{display:block;}
+@keyframes fadeTab{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+main{max-width:720px;margin:0 auto;padding:1.5rem 1rem 6rem;}
+.page-hdr{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:1rem 1.4rem;margin-bottom:1.4rem;display:flex;align-items:center;gap:12px;}
+.page-hdr-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:700;flex-shrink:0;}
+.icon-ex{background:var(--pink);color:#fff;}.icon-pr{background:var(--blue);color:#fff;}.icon-cf{background:var(--amber);color:#fff;}
+.page-hdr-body{flex:1;}
+.page-hdr-title{font-size:15px;font-weight:700;margin-bottom:2px;}
+.page-hdr-desc{font-size:12px;color:var(--text2);}
+.prog-wrap{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:.8rem 1.2rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:12px;}
+.pb-w{flex:1;height:6px;background:var(--bd);border-radius:3px;overflow:hidden;}
+.pb{height:100%;border-radius:3px;transition:width .4s;}
+.pb-pr{background:var(--blue);}.pb-cf{background:var(--amber);}
+.pb-txt{font-size:12px;color:var(--text2);white-space:nowrap;}
+.next-page-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:var(--sf);border:1.5px solid var(--bd);border-radius:var(--r);font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all .15s;margin-top:.5rem;}
+.next-page-btn.pr{border-color:var(--blue);color:var(--blue);background:var(--bl);}
+.next-page-btn.cf{border-color:var(--amber);color:var(--amber);background:var(--al);}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:1.4rem 1.5rem;margin-bottom:1rem;}
+.clabel{font-size:11px;font-weight:700;letter-spacing:.1em;margin-bottom:.85rem;display:flex;align-items:center;gap:6px;}
+.clabel::before{content:'';width:3px;height:14px;border-radius:2px;display:inline-block;}
+.clabel.ex{color:var(--pink);}.clabel.ex::before{background:var(--pink);}
+.clabel.pr{color:var(--blue);}.clabel.pr::before{background:var(--blue);}
+.clabel.cf{color:var(--amber);}.clabel.cf::before{background:var(--amber);}
+.clabel.kai{color:var(--teal);}.clabel.kai::before{background:var(--teal);}
+.q-text{font-size:15px;line-height:2;color:var(--text);margin-bottom:1rem;}
+.prob-src{display:inline-block;font-size:11px;color:var(--text3);background:var(--sf2);border:1px solid var(--bd);border-radius:20px;padding:3px 10px;margin-bottom:.8rem;}
+.point-box{background:var(--al);border:1px solid #e0c888;border-radius:9px;padding:.8rem 1.1rem;margin-bottom:.9rem;font-size:13px;color:var(--amber);line-height:1.8;}
+.point-box strong{display:block;font-size:10px;letter-spacing:.08em;margin-bottom:3px;}
+.important-box{background:#fff8e1;border:2px solid var(--amber);border-radius:9px;padding:.85rem 1.15rem;margin:1rem 0;font-size:14px;color:var(--text);font-weight:700;text-align:center;line-height:1.8;}
+.formula-box{background:var(--bl);border:1px solid #aed6f1;border-radius:10px;padding:1rem 1.4rem;margin:.8rem 0;text-align:center;}
+.formula-frac{display:inline-flex;flex-direction:column;align-items:center;font-size:1em;line-height:1.2;vertical-align:middle;}
+.formula-frac .num{border-bottom:2px solid var(--blue);padding:0 6px;font-weight:700;color:var(--blue);}
+.formula-frac .den{padding:0 6px;font-weight:700;color:var(--blue);}
+.salt-table{width:100%;border-collapse:collapse;margin:.8rem 0;font-size:14px;}
+.salt-table th{background:#e8f4fd;color:var(--blue);font-weight:700;padding:7px 10px;border:1.5px solid #aed6f1;text-align:center;font-size:12px;}
+.salt-table td{padding:7px 10px;border:1.5px solid #aed6f1;text-align:center;background:#fff;}
+.salt-table .hi{background:#fff8e1;font-weight:700;color:var(--amber);}
+.salt-table .hig{background:#e6f5f1;font-weight:700;color:var(--teal);}
+.exp-box{background:var(--sf2);border-radius:9px;padding:.9rem 1.15rem;margin-bottom:.75rem;border-left:3px solid var(--teal);animation:fadeIn .25s ease;}
+.exp-box h4{font-size:11px;color:var(--teal);font-weight:700;letter-spacing:.06em;margin-bottom:.35rem;}
+.exp-box p{font-size:14px;line-height:1.9;color:var(--text);white-space:pre-wrap;}
+.exp-box.blue{border-color:var(--blue);}.exp-box.blue h4{color:var(--blue);}
+.exp-box.amber{border-color:var(--amber);}.exp-box.amber h4{color:var(--amber);}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.reveal-btn{background:var(--teal);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Noto Sans JP',sans-serif;margin-top:.2rem;transition:background .15s;width:100%;}
+.reveal-btn:hover{background:#0b7560;}
+.kai-card{display:none;border-top:3px solid var(--teal);}
+.connector{display:none;flex-direction:column;align-items:center;margin:-.5rem 0;position:relative;z-index:2;}
+.connector-line{width:2px;height:20px;background:var(--teal);}
+.connector-arrow{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:8px solid var(--teal);}
+.choices{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:1rem;}
+.choices-5{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:1rem;}
+@media(max-width:500px){.choices-5{grid-template-columns:1fr 1fr;}}
+.ch{background:var(--sf2);border:1.5px solid var(--bd);border-radius:9px;padding:10px 8px;font-size:14px;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .15s;font-family:'Noto Sans JP',sans-serif;width:100%;}
+.ch:hover:not(:disabled){border-color:var(--blue);background:var(--bl);}
+.ch:disabled{cursor:default;}
+.ch.ok{border-color:var(--teal);background:var(--tl);color:var(--teal);}
+.ch.ng{border-color:var(--pink);background:var(--pl);color:var(--pink);}
+.cnum{width:24px;height:24px;border-radius:50%;background:var(--bd);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.ch.ok .cnum{background:var(--teal);color:#fff;}
+.ch.ng .cnum{background:var(--pink);color:#fff;}
+.timer-wrap{display:flex;align-items:center;gap:10px;margin-bottom:1rem;}
+.timer-ring{position:relative;width:48px;height:48px;flex-shrink:0;}
+.timer-ring svg{width:48px;height:48px;transform:rotate(-90deg);}
+circle{fill:none;stroke-width:3;stroke-linecap:round;}
+.tbg{stroke:var(--bd2);}
+.tfg{stroke:var(--teal);transition:stroke-dashoffset .9s linear;stroke-dasharray:126;stroke-dashoffset:0;}
+.tfg.warn{stroke:var(--amber);}
+.tcenter{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--text2);font-family:'DM Mono',monospace;}
+.timer-msg{font-size:13px;color:var(--text2);line-height:1.5;}
+.timer-msg .goal{color:var(--teal);font-weight:500;}
+.hint-toggle{background:none;border:1px dashed var(--bd);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--text2);cursor:pointer;margin-bottom:.75rem;font-family:'Noto Sans JP',sans-serif;transition:all .15s;}
+.hint-toggle:hover{border-color:var(--blue);color:var(--blue);}
+.hint-box{background:var(--bl);border:1px solid #a8c0e8;border-radius:9px;padding:.75rem 1rem;margin-bottom:.85rem;font-size:13px;color:var(--blue);line-height:1.8;display:none;}
+.abc-wrap{margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid var(--bd);}
+.abc-lbl{font-size:12px;color:var(--text2);margin-bottom:.7rem;}
+.abc-row{display:flex;gap:7px;}
+.abc-btn{flex:1;padding:9px 5px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;border:2px solid;transition:all .15s;font-family:'Noto Sans JP',sans-serif;text-align:center;line-height:1.3;}
+.abc-btn span{display:block;font-size:10px;font-weight:400;margin-top:2px;opacity:.85;}
+.abc-A{border-color:var(--teal);color:var(--teal);background:var(--tl);}
+.abc-A:hover,.abc-A.on{background:var(--teal);color:#fff;}
+.abc-B{border-color:var(--blue);color:var(--blue);background:var(--bl);}
+.abc-B:hover,.abc-B.on{background:var(--blue);color:#fff;}
+.abc-C{border-color:var(--amber);color:var(--amber);background:var(--al);}
+.abc-C:hover,.abc-C.on{background:var(--amber);color:#fff;}
+.prob-n{display:inline-flex;align-items:center;gap:8px;margin-bottom:.9rem;}
+.prob-n .n{width:28px;height:28px;border-radius:6px;font-size:.85rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.n-pr{background:var(--blue);color:#fff;}
+.n-cf{background:var(--amber);color:#fff;}
+.prob-n span{font-size:12px;color:var(--text3);}
+.prob-divider{border:none;border-top:1px dashed var(--bd);margin:1.8rem 0 1.5rem;}
+.fb-ok{display:none;align-items:center;gap:12px;background:#e6faf3;border:2px solid #0d9478;border-radius:12px;padding:12px 16px;margin:8px 0 4px;animation:fbPop .3s ease;}
+.fb-ng{display:none;align-items:center;gap:12px;background:#fde8eb;border:2px solid #d93652;border-radius:12px;padding:12px 16px;margin:8px 0 4px;animation:fbPop .3s ease;}
+@keyframes fbPop{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.reset-btn{background:none;border:1.5px solid #d93652;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;color:#d93652;cursor:pointer;font-family:'Noto Sans JP',sans-serif;margin-left:auto;flex-shrink:0;transition:all .15s;white-space:nowrap;}
+.reset-btn:hover{background:#d93652;color:#fff;}
+.fb-icon{font-size:1.7rem;flex-shrink:0;}
+.fb-text{font-size:13px;font-weight:700;line-height:1.5;}
+.fb-ok .fb-text{color:#0d9478;}
+.fb-ng .fb-text{color:#d93652;}
+.fb-sub{font-size:11px;font-weight:400;display:block;margin-top:1px;opacity:.8;}
+.unit-nav{display:none;flex-direction:column;gap:10px;margin:1.8rem 0 0;padding-top:1.4rem;border-top:2px dashed #d6d2c8;}
+.unit-nav-row{display:flex;gap:8px;flex-wrap:wrap;}
+.unav-btn{flex:1;min-width:120px;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 16px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;border:2px solid;font-family:'Noto Sans JP',sans-serif;transition:all .15s;text-align:center;}
+.unav-index{background:#fff;border-color:#d6d2c8;color:#58544c;}
+.unav-index:hover{border-color:#2055b0;color:#2055b0;background:#eaf0fb;}
+.unav-next{background:#2055b0;border-color:#2055b0;color:#fff;}
+.unav-next:hover{background:#153a80;}
+
+.ratio-box{background:#f0f6ff;border:1.5px solid #aed6f1;border-radius:10px;padding:.8rem 1.2rem;margin:.8rem 0;font-size:15px;font-weight:700;color:var(--blue);text-align:center;}
+.ratio-box .sub{font-size:11px;font-weight:400;color:var(--text3);margin-top:4px;}
+.hl-x{color:var(--pink);font-weight:700;}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <span class="logo">GAMBA</span><span class="logo-sep">|</span>
+  <span class="logo-sub">公務員試験 数的推理</span>
+</header>
+<div class="back-bar">
+  <a href="index-sugaku.html" class="back-btn">← 単元表に戻る</a>
+  <span class="unit-badge">割合③-1　比の基本・比例式</span>
+</div>
+<nav class="tab-nav">
+  <button class="tab-btn active-ex" id="tab-ex" onclick="switchTab('ex')"><span class="tab-pip pip-ex">例</span>例題・解説</button>
+  <button class="tab-btn" id="tab-pr" onclick="switchTab('pr')"><span class="tab-pip pip-pr">練</span>練習問題<span class="tab-done" id="done-pr">✓</span></button>
+  <button class="tab-btn" id="tab-cf" onclick="switchTab('cf')"><span class="tab-pip pip-cf">確</span>確認テスト<span class="tab-done" id="done-cf">✓</span></button>
+</nav>
+<main>
+
+<!-- ══ 例題 ══ -->
+<div class="page active" id="page-ex">
+  <div class="page-hdr">
+    <div class="page-hdr-icon icon-ex">例</div>
+    <div class="page-hdr-body">
+      <div class="page-hdr-title">比の基本・比例式・合計から求める</div>
+      <div class="page-hdr-desc">割合③-1　比例式の利用</div>
+    </div>
+  </div>
+
+  <!-- 比の基本カード -->
+  <div class="card">
+    <div class="clabel ex">【基本】比と比例式のポイント</div>
+    <div class="ratio-box">
+      a : b = c : d　のとき　<strong>ad = bc</strong>
+      <div class="sub">外側×外側 ＝ 内側×内側（たすきがけ）</div>
+    </div>
+    <div class="ratio-box" style="background:#e6f5f1;border-color:#0d9478;">
+      比が <strong>m : n</strong> のとき → <strong>mk, nk</strong> とおく（kは正の整数）<br>
+      <div class="sub">合計や差の条件からkを求めて答えを出す</div>
+    </div>
+  </div>
+
+  <!-- 例題1 比例式 -->
+  <div class="card">
+    <div class="clabel ex">例題（1）比例式でxを求める</div>
+    <div class="q-text">次の比例式で x の値を求めなさい。<br>
+    （1）x : 6 ＝ 4 : 3　　　（2）5 : 3 ＝ 25 : x</div>
+    <button class="reveal-btn" id="rb-q0" onclick="reveal('q0',2)">STEP 1 を見る ▼</button>
+    <div id="q0-s0" class="exp-box" style="display:none">
+      <h4>STEP 1　（1）たすきがけ</h4>
+      <p>x : 6 ＝ 4 : 3
+外側×外側 ＝ 内側×内側
+<strong>3x ＝ 6 × 4 ＝ 24</strong>
+x ＝ <strong>8</strong></p>
+    </div>
+    <div id="q0-s1" class="exp-box blue" style="display:none">
+      <h4>STEP 2　（2）たすきがけ</h4>
+      <p>5 : 3 ＝ 25 : x
+<strong>5x ＝ 3 × 25 ＝ 75</strong>
+x ＝ <strong>15</strong></p>
+    </div>
+    <div id="q0-fin" style="display:none">
+      <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+        <button class="abc-btn abc-A" id="q0-kA" onclick="setMark('q0k','A')">✅ A<span>わかった</span></button>
+        <button class="abc-btn abc-B" id="q0-kB" onclick="setMark('q0k','B')">📖 B<span>解説でわかった</span></button>
+        <button class="abc-btn abc-C" id="q0-kC" onclick="setMark('q0k','C')">❓ C<span>わからなかった</span></button>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- 例題2 合計から求める -->
+  <div class="card">
+    <div class="clabel ex">例題（2）合計から求める（k を使う）</div>
+    <div class="q-text">姉と弟のお金の比が <strong>5 : 3</strong> で，合計は <strong>4800円</strong> である。姉のお金はいくらか。</div>
+    <div class="point-box">
+      <strong>kを使う解法のポイント</strong>
+      比が5:3 → 姉 = 5k，弟 = 3k とおく<br>
+      合計の条件 → 5k＋3k＝4800 → kを求める
+    </div>
+    <button class="reveal-btn" id="rb-q0b" onclick="reveal('q0b',3)">STEP 1 を見る ▼</button>
+    <div id="q0b-s0" class="exp-box" style="display:none">
+      <h4>STEP 1　k でおく</h4>
+      <p>姉 ＝ <strong>5k</strong> 円，弟 ＝ <strong>3k</strong> 円 とおく。</p>
+    </div>
+    <div id="q0b-s1" class="exp-box blue" style="display:none">
+      <h4>STEP 2　合計の条件で方程式</h4>
+      <p>5k ＋ 3k ＝ 4800
+8k ＝ 4800
+<strong>k ＝ 600</strong></p>
+    </div>
+    <div id="q0b-s2" class="exp-box amber" style="display:none">
+      <h4>✅ STEP 3　答え</h4>
+      <p>姉 ＝ 5 × 600 ＝ <strong>3000円</strong>
+弟 ＝ 3 × 600 ＝ 1800円
+確かめ：3000＋1800＝4800円 ✓　比 3000:1800＝5:3 ✓</p>
+    </div>
+    <div id="q0b-fin" style="display:none">
+      <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+        <button class="abc-btn abc-A" id="q0b-kA" onclick="setMark('q0bk','A')">✅ A<span>わかった</span></button>
+        <button class="abc-btn abc-B" id="q0b-kB" onclick="setMark('q0bk','B')">📖 B<span>解説でわかった</span></button>
+        <button class="abc-btn abc-C" id="q0b-kC" onclick="setMark('q0bk','C')">❓ C<span>わからなかった</span></button>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- 例題3 差から求める -->
+  <div class="card">
+    <div class="clabel ex">例題（3）差から求める</div>
+    <div class="q-text">おとな1人の入園料が子ども1人の入園料より <strong>600円</strong> 高い。おとな1人と子ども1人の入園料の比が <strong>5 : 2</strong> であるとき，子ども1人の入園料を求めよ。</div>
+    <button class="reveal-btn" id="rb-q0c" onclick="reveal('q0c',3)">STEP 1 を見る ▼</button>
+    <div id="q0c-s0" class="exp-box" style="display:none">
+      <h4>STEP 1　k でおく</h4>
+      <p>おとな ＝ <strong>5k</strong> 円，子ども ＝ <strong>2k</strong> 円 とおく。</p>
+    </div>
+    <div id="q0c-s1" class="exp-box blue" style="display:none">
+      <h4>STEP 2　差の条件で方程式</h4>
+      <p>おとな − 子ども ＝ 600 より：
+5k − 2k ＝ 600
+3k ＝ 600
+<strong>k ＝ 200</strong></p>
+    </div>
+    <div id="q0c-s2" class="exp-box amber" style="display:none">
+      <h4>✅ STEP 3　答え</h4>
+      <p>子ども ＝ 2 × 200 ＝ <strong>400円</strong>
+おとな ＝ 5 × 200 ＝ 1000円
+確かめ：1000−400＝600円 ✓　比 1000:400＝5:2 ✓</p>
+    </div>
+    <div id="q0c-fin" style="display:none">
+      <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+        <button class="abc-btn abc-A" id="q0c-kA" onclick="setMark('q0ck','A')">✅ A<span>わかった</span></button>
+        <button class="abc-btn abc-B" id="q0c-kB" onclick="setMark('q0ck','B')">📖 B<span>解説でわかった</span></button>
+        <button class="abc-btn abc-C" id="q0c-kC" onclick="setMark('q0ck','C')">❓ C<span>わからなかった</span></button>
+      </div></div>
+      <button class="next-page-btn pr" onclick="switchTab('pr')" style="margin-top:1.4rem;">練習問題へ進む →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 練習 ══ -->
+<div class="page" id="page-pr">
+  <div class="page-hdr"><div class="page-hdr-icon icon-pr">練</div>
+    <div class="page-hdr-body"><div class="page-hdr-title">練習問題</div><div class="page-hdr-desc">比を使って解こう。</div></div>
+  </div>
+  <div class="prog-wrap">
+    <div class="pb-w"><div class="pb pb-pr" id="pb-pr" style="width:0%"></div></div>
+    <div class="pb-txt" id="pb-pr-txt">0 / 2 完了</div>
+  </div>
+
+  <div class="prob-n"><span class="n n-pr">1</span><span>練習 第1問</span></div>
+  <div class="card" id="q1-card">
+    <div class="clabel pr">練習 第1問</div>
+    <div class="q-text">縦と横の比が <strong>3 : 5</strong> の長方形の周囲が <strong>64 cm</strong> である。縦の長さを求めなさい。</div>
+    <button class="hint-toggle" onclick="toggleHint('h1')">💡 ヒントを見る</button>
+    <div class="hint-box" id="h1">縦=3k，横=5k とおく。<br>周囲 = 2（縦＋横）= 2（3k＋5k）= 16k = 64 → k = 4</div>
+    <div id="t1" class="timer-wrap"><div class="timer-ring" id="ring-q1"><svg viewBox="0 0 44 44"><circle class="tbg" cx="22" cy="22" r="20"/><circle class="tfg" cx="22" cy="22" r="20"/></svg><div class="tcenter" id="tc1">0:00</div></div><div class="timer-msg" id="tm1">自力で考えましょう。<span class="goal">目標 4分以内</span></div></div>
+    <div class="choices" id="ch-q1">
+      <button class="ch" onclick="ans('q1',0,0)"><span class="cnum">1</span>縦 12 cm</button>
+      <button class="ch" onclick="ans('q1',1,0)"><span class="cnum">2</span>縦 15 cm</button>
+      <button class="ch" onclick="ans('q1',2,0)"><span class="cnum">3</span>縦 18 cm</button>
+      <button class="ch" onclick="ans('q1',3,0)"><span class="cnum">4</span>縦 20 cm</button>
+    </div>
+    <div class="fb-ok" id="fb-ok-q1"><span class="fb-icon">🎉</span><span class="fb-text">正解！<span class="fb-sub">k=4 → 縦3×4=12cm</span></span></div>
+    <div class="fb-ng" id="fb-ng-q1"><span class="fb-icon">😢</span><span class="fb-text">もう一度！<span class="fb-sub">周囲=2（縦+横）を忘れずに</span></span><button class="reset-btn" onclick="resetQ('q1')">🔄 もう一度</button></div>
+    <div id="q1-res" style="display:none">
+      <div class="point-box"><strong>解法のカギ</strong>縦=3k，横=5k。2(3k+5k)=64 → 16k=64 → k=4 → 縦=12cm。</div>
+      <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+        <button class="abc-btn abc-A" id="q1-mA" onclick="setMark('q1m','A')">✅ A<span>わかった</span></button>
+        <button class="abc-btn abc-B" id="q1-mB" onclick="setMark('q1m','B')">📖 B<span>解説でわかった</span></button>
+        <button class="abc-btn abc-C" id="q1-mC" onclick="setMark('q1m','C')">❓ C<span>わからなかった</span></button>
+      </div></div>
+    </div>
+  </div>
+  <div class="connector" id="cn-q1"><div class="connector-line"></div><div class="connector-arrow"></div></div>
+  <div class="card kai-card" id="kai-q1">
+    <div class="clabel kai">段階解説</div>
+    <div id="q1-s0" class="exp-box" style="display:none"><h4>STEP 1　k でおく</h4><p>縦 ＝ 3k cm，横 ＝ 5k cm とおく。</p></div>
+    <div id="q1-s1" class="exp-box blue" style="display:none"><h4>STEP 2　周囲の条件で方程式</h4><p>2（3k＋5k）＝ 64　→　16k ＝ 64　→　k ＝ 4</p></div>
+    <div id="q1-s2" class="exp-box amber" style="display:none"><h4>✅ STEP 3　答え</h4><p>縦 ＝ 3×4 ＝ <strong>12 cm</strong>，横 ＝ 5×4 ＝ 20 cm</p></div>
+    <button class="reveal-btn" id="rb-q1" onclick="reveal('q1',3)">STEP 1 を見る ▼</button>
+    <div id="q1-fin" style="display:none"><div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+      <button class="abc-btn abc-A" id="q1-kA" onclick="setMark('q1k','A')">✅ A<span>わかった</span></button>
+      <button class="abc-btn abc-B" id="q1-kB" onclick="setMark('q1k','B')">📖 B<span>解説でわかった</span></button>
+      <button class="abc-btn abc-C" id="q1-kC" onclick="setMark('q1k','C')">❓ C<span>わからなかった</span></button>
+    </div></div></div>
+  </div>
+
+  <hr class="prob-divider">
+
+  <div class="prob-n"><span class="n n-pr">2</span><span>練習 第2問</span></div>
+  <div class="card" id="q2-card">
+    <div class="clabel pr">練習 第2問</div>
+    <div class="q-text">A市とB市の人口の比は <strong>7 : 3</strong> で，合計は <strong>24万人</strong> である。A市の人口は何万人か。</div>
+    <button class="hint-toggle" onclick="toggleHint('h2')">💡 ヒントを見る</button>
+    <div class="hint-box" id="h2">A=7k，B=3k とおく。7k+3k=24 → 10k=24 → k=2.4</div>
+    <div id="t2" class="timer-wrap"><div class="timer-ring" id="ring-q2"><svg viewBox="0 0 44 44"><circle class="tbg" cx="22" cy="22" r="20"/><circle class="tfg" cx="22" cy="22" r="20"/></svg><div class="tcenter" id="tc2">0:00</div></div><div class="timer-msg" id="tm2">自力で考えましょう。<span class="goal">目標 3分以内</span></div></div>
+    <div class="choices" id="ch-q2">
+      <button class="ch" onclick="ans('q2',0,2)"><span class="cnum">1</span>12万人</button>
+      <button class="ch" onclick="ans('q2',1,2)"><span class="cnum">2</span>15万人</button>
+      <button class="ch" onclick="ans('q2',2,2)"><span class="cnum">3</span>16.8万人</button>
+      <button class="ch" onclick="ans('q2',3,2)"><span class="cnum">4</span>18万人</button>
+    </div>
+    <div class="fb-ok" id="fb-ok-q2"><span class="fb-icon">🎉</span><span class="fb-text">正解！<span class="fb-sub">k=2.4 → A=7×2.4=16.8万人</span></span></div>
+    <div class="fb-ng" id="fb-ng-q2"><span class="fb-icon">😢</span><span class="fb-text">もう一度！<span class="fb-sub">A=7k，B=3kとおいて合計=24</span></span><button class="reset-btn" onclick="resetQ('q2')">🔄 もう一度</button></div>
+    <div id="q2-res" style="display:none">
+      <div class="point-box"><strong>解法のカギ</strong>A=7k，B=3k。10k=24 → k=2.4 → A=7×2.4=16.8万人。</div>
+      <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+        <button class="abc-btn abc-A" id="q2-mA" onclick="setMark('q2m','A')">✅ A<span>わかった</span></button>
+        <button class="abc-btn abc-B" id="q2-mB" onclick="setMark('q2m','B')">📖 B<span>解説でわかった</span></button>
+        <button class="abc-btn abc-C" id="q2-mC" onclick="setMark('q2m','C')">❓ C<span>わからなかった</span></button>
+      </div></div>
+    </div>
+  </div>
+  <div class="connector" id="cn-q2"><div class="connector-line"></div><div class="connector-arrow"></div></div>
+  <div class="card kai-card" id="kai-q2">
+    <div class="clabel kai">段階解説</div>
+    <div id="q2-s0" class="exp-box" style="display:none"><h4>STEP 1　k でおく</h4><p>A ＝ 7k 万人，B ＝ 3k 万人 とおく。</p></div>
+    <div id="q2-s1" class="exp-box blue" style="display:none"><h4>STEP 2　合計の条件</h4><p>7k＋3k＝24 → 10k＝24 → <strong>k＝2.4</strong></p></div>
+    <div id="q2-s2" class="exp-box amber" style="display:none"><h4>✅ STEP 3　答え</h4><p>A ＝ 7×2.4 ＝ <strong>16.8万人</strong>　確かめ：16.8+7.2=24 ✓</p></div>
+    <button class="reveal-btn" id="rb-q2" onclick="reveal('q2',3)">STEP 1 を見る ▼</button>
+    <div id="q2-fin" style="display:none"><div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+      <button class="abc-btn abc-A" id="q2-kA" onclick="setMark('q2k','A')">✅ A<span>わかった</span></button>
+      <button class="abc-btn abc-B" id="q2-kB" onclick="setMark('q2k','B')">📖 B<span>解説でわかった</span></button>
+      <button class="abc-btn abc-C" id="q2-kC" onclick="setMark('q2k','C')">❓ C<span>わからなかった</span></button>
+    </div></div></div>
+  </div>
+  <button class="next-page-btn cf" onclick="switchTab('cf')" style="margin-top:1rem;">確認テストへ進む →</button>
+</div>
+
+<!-- ══ 確認テスト ══ -->
+<div class="page" id="page-cf">
+  <div class="page-hdr"><div class="page-hdr-icon icon-cf">確</div>
+    <div class="page-hdr-body"><div class="page-hdr-title">確認テスト</div><div class="page-hdr-desc">本試験レベルに挑戦しよう。</div></div>
+  </div>
+  <div class="prog-wrap">
+    <div class="pb-w"><div class="pb pb-cf" id="pb-cf" style="width:0%"></div></div>
+    <div class="pb-txt" id="pb-cf-txt">0 / 1 完了</div>
+  </div>
+
+  <div class="card" id="q3-card">
+    <div class="clabel cf">確認テスト</div>
+    <span class="prob-src">警察官・平成7年度（類題）</span>
+    <div class="q-text">面積 <strong>70 km²</strong>，人口密度 <strong>150人/km²</strong> のA町と，面積 <strong>130 km²</strong>，人口密度 <strong>65人/km²</strong> のB村が合併してC町になった。C町の人口密度はおよそいくらになったか。</div>
+    <div style="background:var(--al);border:1px solid #e0c888;border-radius:9px;padding:.75rem 1rem;margin:.7rem 0;font-size:13px;color:var(--amber);">
+      人口密度 ＝ 人口 ÷ 面積　なので，まず各町の<strong>人口</strong>を求める！
+    </div>
+    <div id="t3" class="timer-wrap"><div class="timer-ring" id="ring-q3"><svg viewBox="0 0 44 44"><circle class="tbg" cx="22" cy="22" r="20"/><circle class="tfg" cx="22" cy="22" r="20"/></svg><div class="tcenter" id="tc3">0:00</div></div><div class="timer-msg" id="tm3">自力で考えましょう。<span class="goal">目標 4分以内</span></div></div>
+    <div class="choices" id="ch-q3">
+      <button class="ch" onclick="ans('q3',0,0)"><span class="cnum">1</span>95人/km²</button>
+      <button class="ch" onclick="ans('q3',1,0)"><span class="cnum">2</span>102人/km²</button>
+      <button class="ch" onclick="ans('q3',2,0)"><span class="cnum">3</span>108人/km²</button>
+      <button class="ch" onclick="ans('q3',3,0)"><span class="cnum">4</span>114人/km²</button>
+      <button class="ch" onclick="ans('q3',4,0)"><span class="cnum">5</span>125人/km²</button>
+    </div>
+    <div class="fb-ok" id="fb-ok-q3"><span class="fb-icon">🎉</span><span class="fb-text">正解！<span class="fb-sub">18950÷200≈95人/km²</span></span></div>
+    <div class="fb-ng" id="fb-ng-q3"><span class="fb-icon">😢</span><span class="fb-text">もう一度！<span class="fb-sub">A町・B村の人口を先に求めましょう</span></span><button class="reset-btn" onclick="resetQ('q3')">🔄 もう一度</button></div>
+    <div id="q3-res" style="display:none">
+      <div class="clabel kai">段階解説</div>
+      <div class="exp-box"><h4>STEP 1　各町の人口を求める</h4><p>人口 ＝ 面積 × 人口密度 なので：
+A町の人口 ＝ 70 × 150 ＝ <strong>10500人</strong>
+B村の人口 ＝ 130 × 65 ＝ <strong>8450人</strong></p></div>
+      <div class="exp-box blue"><h4>STEP 2　合計を合計面積で割る</h4><p>合計人口 ＝ 10500＋8450 ＝ 18950人
+合計面積 ＝ 70＋130 ＝ 200 km²
+C町の人口密度 ＝ 18950÷200 ＝ <strong>94.75 ≈ 95人/km²</strong></p></div>
+      <div class="exp-box amber"><h4>✅ 正答は 1（95人/km²）</h4><p>⚠️ 単純に(150+65)÷2=107.5 では間違い！<br>面積が違うので<strong>加重平均</strong>で計算する必要があります。</p></div>
+      <div class="abc-wrap"><div class="abc-lbl">理解度をマーク</div><div class="abc-row">
+        <button class="abc-btn abc-A" id="q3-mA" onclick="setMark('q3m','A')">✅ A<span>わかった</span></button>
+        <button class="abc-btn abc-B" id="q3-mB" onclick="setMark('q3m','B')">📖 B<span>解説でわかった</span></button>
+        <button class="abc-btn abc-C" id="q3-mC" onclick="setMark('q3m','C')">❓ C<span>わからなかった</span></button>
+      </div></div>
+    </div>
+  </div>
+  <div class="unit-nav" id="unit-nav">
+    <div class="unit-nav-row">
+      <a href="index-sugaku.html" class="unav-btn unav-index">← 単元表</a>
+      <a href="wariai3-2.html" class="unav-btn unav-next">次へ：連比・3つの比 →</a>
+    </div>
+  </div>
+</div>
+</main>
+
+<script>
+const answered={},stepRev={},timers={},TMAX=300;
+let pracDone=0,cfDone=0;
+
+function switchTab(tab){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  ['ex','pr','cf'].forEach(t=>{const b=document.getElementById('tab-'+t);if(b)b.className='tab-btn';});
+  const pg=document.getElementById('page-'+tab);if(pg)pg.classList.add('active');
+  const tb=document.getElementById('tab-'+tab);if(tb)tb.classList.add('active-'+tab);
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(tab==='pr'&&!answered.q1)startTimer('q1');
+  if(tab==='cf'&&!answered.q3)startTimer('q3');
+}
+
+function startTimer(qid){
+  if(timers[qid]||answered[qid])return;
+  const start=Date.now();const n=qid.slice(1);tick(0);
+  timers[qid]=setInterval(()=>tick(Math.floor((Date.now()-start)/1000)),1000);
+  function tick(sec){
+    const ring=document.getElementById('ring-'+qid);if(!ring)return;
+    const fg=ring.querySelector('.tfg');
+    const tc=ring.querySelector('.tcenter');
+    const msg=document.getElementById('tm'+n);
+    const pct=Math.min(sec/TMAX,1);
+    fg.style.strokeDashoffset=126*pct;
+    fg.className='tfg'+(pct>.8?' warn':'');
+    const m=Math.floor(sec/60),s=sec%60;
+    if(tc)tc.textContent=m+':'+(s<10?'0':'')+s;
+    if(msg){
+      if(sec<60)msg.innerHTML='自力で考えましょう。<span class="goal">目標 5分以内</span>';
+      else if(sec<300)msg.innerHTML='じっくり考えています…<span class="goal">まだ大丈夫！</span>';
+      else msg.innerHTML='解説を見て確認しましょう。';
+    }
+  }
+}
+function stopTimer(qid){clearInterval(timers[qid]);timers[qid]=null;}
+
+function ans(qid,idx,correct){
+  if(answered[qid])return;
+  answered[qid]=true;stopTimer(qid);
+  const n=qid.slice(1);
+  const tw=document.getElementById('t'+n);if(tw)tw.style.display='none';
+  document.querySelectorAll('#ch-'+qid+' .ch').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===correct){b.className='ch ok';b.querySelector('.cnum').style.cssText='background:var(--teal);color:#fff';}
+    else if(i===idx&&i!==correct){b.className='ch ng';b.querySelector('.cnum').style.cssText='background:var(--pink);color:#fff';}
+  });
+  const isOk=(idx===correct);
+  const fok=document.getElementById('fb-ok-'+qid);const fng=document.getElementById('fb-ng-'+qid);
+  if(isOk){if(fok)fok.style.display='flex';_confetti();}
+  else{if(fng)fng.style.display='flex';}
+  const res=document.getElementById(qid+'-res');if(res)res.style.display='block';
+  const cn=document.getElementById('cn-'+qid);if(cn)cn.style.display='flex';
+  const kc=document.getElementById('kai-'+qid);if(kc){kc.style.display='block';setTimeout(()=>kc.scrollIntoView({behavior:'smooth',block:'start'}),100);}
+  if(['q1','q2'].includes(qid)){
+    pracDone++;
+    const pb=document.getElementById('pb-pr');if(pb)pb.style.width=(pracDone/2*100)+'%';
+    const pt=document.getElementById('pb-pr-txt');if(pt)pt.textContent=pracDone+' / 2 完了';
+    if(pracDone===2){const dp=document.getElementById('done-pr');if(dp)dp.style.display='flex';}
+    if(qid==='q1'&&!answered.q2)setTimeout(()=>startTimer('q2'),400);
+  }
+  if(['q3'].includes(qid)){
+    cfDone++;
+    const pb=document.getElementById('pb-cf');if(pb)pb.style.width='100%';
+    const pt=document.getElementById('pb-cf-txt');if(pt)pt.textContent='1 / 1 完了';
+    const dp=document.getElementById('done-cf');if(dp)dp.style.display='flex';
+    const un=document.getElementById('unit-nav');if(un)un.style.display='flex';
+  }
+}
+
+function reveal(qid,total){
+  if(!stepRev[qid])stepRev[qid]=0;
+  const r=stepRev[qid];
+  const el=document.getElementById(qid+'-s'+r);
+  if(el){el.style.display='block';stepRev[qid]++;setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'nearest'}),60);}
+  const btn=document.getElementById('rb-'+qid);
+  if(stepRev[qid]>=total){
+    if(btn)btn.style.display='none';
+    const fin=document.getElementById(qid+'-fin');
+    if(fin){fin.style.display='block';setTimeout(()=>fin.scrollIntoView({behavior:'smooth',block:'nearest'}),60);}
+  } else {
+    if(btn)btn.textContent='STEP '+stepRev[qid]+' を見る ▼';
+  }
+}
+
+function toggleHint(id){const b=document.getElementById(id);if(b)b.style.display=b.style.display==='block'?'none':'block';}
+function setMark(prefix,m){const base=prefix.slice(0,2);const kind=prefix.slice(2);['A','B','C'].forEach(x=>{const el=document.getElementById(base+'-'+kind+x);if(el)el.classList.toggle('on',x===m);});}
+function resetQ(qid){
+  delete answered[qid];stopTimer(qid);delete timers[qid];
+  const n=parseInt(qid.slice(1));
+  if(['q1','q2'].includes(qid)){if(pracDone>0)pracDone--;const pb=document.getElementById('pb-pr');if(pb)pb.style.width=(pracDone/2*100)+'%';const pt=document.getElementById('pb-pr-txt');if(pt)pt.textContent=pracDone+' / 2 完了';const dp=document.getElementById('done-pr');if(dp)dp.style.display='none';}
+  const fok=document.getElementById('fb-ok-'+qid);if(fok)fok.style.display='none';
+  const fng=document.getElementById('fb-ng-'+qid);if(fng)fng.style.display='none';
+  const res=document.getElementById(qid+'-res');if(res)res.style.display='none';
+  const cn=document.getElementById('cn-'+qid);if(cn)cn.style.display='none';
+  const kc=document.getElementById('kai-'+qid);if(kc)kc.style.display='none';
+  const tw=document.getElementById('t'+n);if(tw)tw.style.display='flex';
+  document.querySelectorAll('#ch-'+qid+' .ch').forEach(b=>{b.disabled=false;b.className='ch';const cn2=b.querySelector('.cnum');if(cn2)cn2.style.cssText='';});
+  const steps=document.querySelectorAll('[id^="'+qid+'-s"]');steps.forEach(el=>el.style.display='none');
+  stepRev[qid]=0;
+  const rb=document.getElementById('rb-'+qid);if(rb){rb.style.display='';rb.textContent='STEP 1 を見る ▼';}
+  const fin=document.getElementById(qid+'-fin');if(fin)fin.style.display='none';
+  startTimer(qid);
+}
+function _confetti(){
+  var cv=document.getElementById('_cf');if(!cv){cv=document.createElement('canvas');cv.id='_cf';cv.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;';document.body.appendChild(cv);}
+  var ctx=cv.getContext('2d');cv.width=innerWidth;cv.height=innerHeight;
+  var pts=[],run=true;
+  for(var i=0;i<180;i++)pts.push({x:Math.random()*cv.width,y:-Math.random()*cv.height*.5,s:Math.random()*8+4,c:'hsl('+Math.floor(Math.random()*360)+',80%,60%)',sp:Math.random()*4+2,r:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.15});
+  (function step(){if(!run)return;requestAnimationFrame(step);ctx.clearRect(0,0,cv.width,cv.height);pts.forEach(function(p){p.y+=p.sp;p.r+=p.rv;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.fillStyle=p.c;ctx.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);ctx.restore();});})();
+  setTimeout(function(){run=false;ctx.clearRect(0,0,cv.width,cv.height);},3500);
+}
+startTimer('q1');
+</script>
+</body>
+</html>

@@ -428,6 +428,64 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
       <a class="page-link" href="wariai2.html#page-cf">✅ 確認テスト</a>
     </div>
   </div>
+
+  <!-- 割合③-1 比の基本・比例式 -->
+  <div class="unit-card" id="uc-wariai3-1">
+    <div class="unit-top">
+      <div class="unit-num num-pink">⑤</div>
+      <div class="unit-title">比の基本・比例式の利用
+        <span class="unit-sub">たすきがけ・kを使う・合計や差から求める</span>
+      </div>
+      <div class="unit-tags">
+        <span class="tag tag-A">重要度A</span>
+        <span class="tag tag-new">NEW</span>
+      </div>
+    </div>
+    <div class="abc-row">
+      <span class="abc-lbl-sm">理解度</span>
+      <button class="abc-btn" data-id="wariai3-1" data-grade="A" onclick="setGrade(this)">A</button>
+      <button class="abc-btn" data-id="wariai3-1" data-grade="B" onclick="setGrade(this)">B</button>
+      <button class="abc-btn" data-id="wariai3-1" data-grade="C" onclick="setGrade(this)">C</button>
+    </div>
+    <div class="stat-row">
+      <div class="stat-item">学習回数：<span class="val" id="cnt-wariai3-1">0</span>回</div>
+      <div class="repeat-dots" id="dots-wariai3-1"></div>
+      <div class="stat-item">最終：<span class="val" id="last-wariai3-1">—</span></div>
+    </div>
+    <div class="link-row">
+      <a class="page-link main-link" href="wariai3-1.html">📖 学習する</a>
+      <a class="page-link" href="wariai3-1.html#page-cf">✅ 確認テスト</a>
+    </div>
+  </div>
+
+  <!-- 割合③-2 連比・3つの比 -->
+  <div class="unit-card" id="uc-wariai3-2">
+    <div class="unit-top">
+      <div class="unit-num num-pink">⑥</div>
+      <div class="unit-title">連比・3つ以上の比の問題
+        <span class="unit-sub">A:B:Cを求める・連比＋合計・過去問</span>
+      </div>
+      <div class="unit-tags">
+        <span class="tag tag-A">重要度A</span>
+        <span class="tag tag-new">NEW</span>
+      </div>
+    </div>
+    <div class="abc-row">
+      <span class="abc-lbl-sm">理解度</span>
+      <button class="abc-btn" data-id="wariai3-2" data-grade="A" onclick="setGrade(this)">A</button>
+      <button class="abc-btn" data-id="wariai3-2" data-grade="B" onclick="setGrade(this)">B</button>
+      <button class="abc-btn" data-id="wariai3-2" data-grade="C" onclick="setGrade(this)">C</button>
+    </div>
+    <div class="stat-row">
+      <div class="stat-item">学習回数：<span class="val" id="cnt-wariai3-2">0</span>回</div>
+      <div class="repeat-dots" id="dots-wariai3-2"></div>
+      <div class="stat-item">最終：<span class="val" id="last-wariai3-2">—</span></div>
+    </div>
+    <div class="link-row">
+      <a class="page-link main-link" href="wariai3-2.html">📖 学習する</a>
+      <a class="page-link" href="wariai3-2.html#page-cf">✅ 確認テスト</a>
+    </div>
+  </div>
 </div>
 
 <!-- ━━━ 場合の数・確率 ━━━ -->
@@ -512,9 +570,9 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 const LS_KEY='gamba_sugaku_v1';
 const LS_CAL='gamba_sugaku_cal_v1';
 
-const ALL_UNITS = ['hayasa1','hayasa2','hayasa3','hayasa4','wariai1-1','wariai1-2','wariai1-3','wariai2'];
+const ALL_UNITS = ['hayasa1','hayasa2','hayasa3','hayasa4','wariai1-1','wariai1-2','wariai1-3','wariai2','wariai3-1','wariai3-2'];
 const HAYASA_UNITS = ['hayasa1','hayasa2','hayasa3','hayasa4'];
-const WARIAI_UNITS = ['wariai1-1','wariai1-2','wariai1-3','wariai2'];
+const WARIAI_UNITS = ['wariai1-1','wariai1-2','wariai1-3','wariai2','wariai3-1','wariai3-2'];
 
 const BADGES = [
   {id:'first_study',icon:'🌱',name:'学習スタート',cond:d=>ALL_UNITS.some(id=>getCount(d,id)>0)},
